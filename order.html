@@ -26,10 +26,6 @@
     <span class="nav-link" data-go="about">เกี่ยวกับ</span>
     <span class="nav-link" data-go="contact">ติดต่อ</span>
   </div>
-  <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
-    <span class="badge b-gold" id="navPhone"></span>
-    <a class="btn btn-sm btn-ghost no-print" href="index.html">เข้าสู่ระบบร้าน</a>
-  </div>
 </nav>
 
 <div class="shop-wrap">
@@ -148,7 +144,6 @@
     $$('[data-shopname]').forEach(function (e) { e.textContent = S.shopName; });
     $$('[data-tagline]').forEach(function (e) { e.textContent = S.tagline; });
     UI.paintLogos();
-    $('#navPhone').textContent = '📞 ' + S.phone;
     $('#footInfo').textContent = S.address + ' • โทร ' + S.phone + (S.line ? ' • LINE ' + S.line : '');
     $('#footNote').textContent = S.openHours + ' — ' + S.orderFooter;
     if (S.accent) {
