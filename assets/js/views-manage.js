@@ -678,6 +678,26 @@
             '<div class="field" style="margin:0"><label>คำอธิบาย</label><textarea class="input" data-ap="' + i + '|d" rows="3">' + esc(p.d) + '</textarea></div></div>';
         }).join('') + '</div></div>' +
 
+      /* ---------- คำแปลหลายภาษา ---------- */
+      '<div class="card mb16"><div class="card-head"><h3>🌐 เนื้อหาหลายภาษา (English / 中文)</h3>' +
+        '<div class="sp"><span class="badge b-mute">เว้นว่าง = ใช้ข้อความภาษาไทย</span></div></div>' +
+        UI.tip('ลูกค้ากดสลับภาษาได้ที่มุมขวาบนของหน้าเว็บ • ข้อความประจำหน้าเว็บ (เมนู ปุ่ม ฟอร์ม ขั้นตอนสั่งซื้อ) ระบบแปลให้อัตโนมัติแล้ว ' +
+          'ช่องด้านล่างนี้ใช้แปลเฉพาะ<b>เนื้อหาที่คุณเขียนเอง</b> • <b>ชื่อสินค้าและหมวดหมู่</b>จะแสดงตามที่กรอกในสต๊อกทุกภาษา หากต้องการชื่ออังกฤษ แนะนำตั้งชื่อสินค้าแบบไทย-อังกฤษในบรรทัดเดียว') +
+        '<div class="grid g-2" style="margin-top:16px">' +
+          [['en', 'English 🇬🇧'], ['zh', '中文 🇨🇳']].map(function (L) {
+            var t = (S.i18n && S.i18n[L[0]]) || {};
+            return '<div style="background:var(--panel-2);border:1px solid var(--line-soft);border-radius:10px;padding:16px">' +
+              '<div class="sec-title">' + esc(L[1]) + '</div>' +
+              ft('ป้ายกำกับหน้าแรก', L[0], 'heroBadge', t.heroBadge) +
+              ft('หัวข้อใหญ่หน้าแรก', L[0], 'heroTitle', t.heroTitle) +
+              fta('คำโปรยหน้าแรก', L[0], 'heroText', t.heroText, 3) +
+              ft('ข้อความบนปุ่ม', L[0], 'heroCta', t.heroCta) +
+              ft('หัวข้อหน้าเกี่ยวกับ', L[0], 'aboutTitle', t.aboutTitle) +
+              fta('เนื้อหาหน้าเกี่ยวกับ', L[0], 'aboutText', t.aboutText, 6) +
+              '</div>';
+          }).join('') +
+        '</div></div>' +
+
       /* ---------- ภาษี ---------- */
       '<div class="card mb16"><div class="card-head"><h3>ภาษี & การแสดงผล</h3></div>' +
         '<div class="grid g-3">' +
@@ -729,6 +749,17 @@
         UI.toast('บันทึกแล้ว', 'ok', 1200); App.applySettings();
       };
     });
+    /* คำแปลหลายภาษา */
+    $$('[data-i18]', el).forEach(function (i) {
+      i.onchange = function () {
+        var parts = i.dataset.i18.split('|'), lang = parts[0], key = parts[1];
+        if (!S.i18n) S.i18n = {};
+        if (!S.i18n[lang]) S.i18n[lang] = {};
+        S.i18n[lang][key] = i.value;
+        DB.save(); UI.toast('บันทึกคำแปลแล้ว', 'ok', 1200);
+      };
+    });
+
     /* จุดเด่น 3 ข้อในหน้าเกี่ยวกับ */
     $$('[data-ap]', el).forEach(function (i) {
       i.onchange = function () {
@@ -803,6 +834,15 @@
     function f(label, key, val, type) {
       return '<div class="field"><label>' + esc(label) + '</label>' +
         '<input class="input" data-k="' + key + '" type="' + (type || 'text') + '" value="' + esc(val) + '"></div>';
+    }
+    /* ช่องกรอกคำแปล: data-i18="lang|key" */
+    function ft(label, lang, key, val) {
+      return '<div class="field"><label>' + esc(label) + '</label>' +
+        '<input class="input" data-i18="' + lang + '|' + key + '" value="' + esc(val || '') + '"></div>';
+    }
+    function fta(label, lang, key, val, rows) {
+      return '<div class="field"><label>' + esc(label) + '</label>' +
+        '<textarea class="input" data-i18="' + lang + '|' + key + '" rows="' + rows + '">' + esc(val || '') + '</textarea></div>';
     }
   };
 

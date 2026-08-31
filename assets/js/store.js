@@ -224,7 +224,27 @@
         ],
         founded: '2024',
 
-        orderFooter: 'ขอบคุณที่ไว้วางใจ Crow’s Case'
+        orderFooter: 'ขอบคุณที่ไว้วางใจ Crow’s Case',
+
+        /* ---- คำแปลเนื้อหาหน้าเว็บ (เว้นว่างได้ = ใช้ภาษาไทย) ---- */
+        i18n: {
+          en: {
+            heroBadge: 'Featured this month',
+            heroTitle: 'Protect the cards you love, with premium craftsmanship',
+            heroText: 'Crow’s Case selects every material and assembles every piece with care, so your collection stays in the best possible condition — in storage and on the road.',
+            heroCta: 'View product details',
+            aboutTitle: 'Before there was Crow’s Case',
+            aboutText: 'We started as a small group of collectors who winced every time an important card picked up a hairline scratch, a bumped corner, or faded under sunlight. So we went looking for the right materials and designed a case ourselves, testing it hundreds of times over — until we had something we trusted with the card we treasure most.\n\nThe name Crow’s Case comes from the bird itself: crows are famous for collecting what they value and defending their nest fiercely. That is exactly how we treat your collection.'
+          },
+          zh: {
+            heroBadge: '本月推荐',
+            heroTitle: '以精湛工艺，守护你心爱的卡牌',
+            heroText: 'Crow’s Case 精挑每一种材料、细致完成每一道工序，让你的收藏无论是长期存放还是随身携带，都能保持最佳状态。',
+            heroCta: '查看商品详情',
+            aboutTitle: '关于 Crow’s Case 的由来',
+            aboutText: '我们最初只是一群卡牌收藏者。每当重要的卡片出现细小划痕、卡角磕碰，或因阳光照射而褪色时，都让人心疼不已。于是我们亲自寻找材料、自行设计保护壳，反复测试上百次，直到做出连自己最珍视的卡片都敢放进去的产品。\n\nCrow’s Case 这个名字来自乌鸦——它以收藏珍贵之物、竭力守护巢穴而闻名。我们守护你的收藏，也是同样的心情。'
+          }
+        }
       },
       users: users,
       categories: ['Magnetic Holder', 'Toploader', 'Sleeve', 'Storage Box', 'Display Stand', 'อุปกรณ์เสริม'],

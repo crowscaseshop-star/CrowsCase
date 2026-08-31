@@ -7,7 +7,7 @@
 <meta name="description" content="Crow's Case — เคสและอุปกรณ์ปกป้องการ์ดสะสมระดับพรีเมียม สั่งซื้อออนไลน์ ทางร้านติดต่อกลับภายใน 24 ชั่วโมง">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
 </head>
@@ -21,11 +21,12 @@
     <div class="brand-sub" data-tagline>PREMIUM CARD PROTECTION</div>
   </div>
   <div class="nav-links" id="navLinks">
-    <span class="nav-link active" data-go="home">หน้าแรก</span>
-    <span class="nav-link" data-go="shop">เลือกซื้อ</span>
-    <span class="nav-link" data-go="about">เกี่ยวกับ</span>
-    <span class="nav-link" data-go="contact">ติดต่อ</span>
+    <span class="nav-link active" data-go="home" data-t="navHome">หน้าแรก</span>
+    <span class="nav-link" data-go="shop" data-t="navShop">เลือกซื้อ</span>
+    <span class="nav-link" data-go="about" data-t="navAbout">เกี่ยวกับ</span>
+    <span class="nav-link" data-go="contact" data-t="navContact">ติดต่อ</span>
   </div>
+  <div class="lang-switch" id="langSwitch" role="group" aria-label="เปลี่ยนภาษา / Language"></div>
 </nav>
 
 <div class="shop-wrap">
@@ -34,60 +35,45 @@
   <section class="section" id="home" style="border-top:none;padding-top:0">
     <div class="hero-split">
       <div>
-        <div class="hero-badge" id="heroBadge">สินค้าแนะนำ</div>
+        <div class="hero-badge" id="heroBadge"></div>
         <h1 class="gold-text" id="heroTitle"></h1>
         <p class="lead" id="heroText"></p>
         <div class="hero-price" id="heroPrice"></div>
         <div class="hero-actions">
-          <button class="btn btn-gold" id="heroBuy">สั่งซื้อสินค้านี้</button>
-          <button class="btn btn-ghost" data-go="shop">ดูสินค้าทั้งหมด →</button>
+          <button class="btn btn-gold" id="heroBuy"></button>
+          <button class="btn btn-ghost" data-go="shop" id="heroViewAll"></button>
         </div>
       </div>
       <div class="feature-frame" id="heroImage"></div>
     </div>
-
-    <div class="trust">
-      <div class="trust-item"><div class="ic">◆</div><b>คัดวัสดุเกรดพรีเมียม</b>
-        <span>อะคริลิกใสพิเศษ กันรอยและตัดแสง UV รักษาสีงานพิมพ์ให้คมชัดในระยะยาว</span></div>
-      <div class="trust-item"><div class="ic">✦</div><b>ตรวจทุกชิ้นก่อนส่ง</b>
-        <span>ขอบเรียบสนิท ไม่บาดมือ ไม่บาดการ์ด ทุกชิ้นผ่านการตรวจด้วยมือ</span></div>
-      <div class="trust-item"><div class="ic">☗</div><b>ยืนยันก่อนชำระเงินเสมอ</b>
-        <span>สั่งผ่านเว็บได้เลย ทางร้านโทรกลับยืนยันรายการก่อนทุกครั้ง ไม่ต้องโอนก่อน</span></div>
-    </div>
+    <div class="trust" id="trustBox"></div>
   </section>
 
   <!-- ============ 2. เลือกซื้อ ============ -->
   <section class="section" id="shop">
     <div class="sec-head">
-      <div class="sec-kicker">Shop</div>
-      <h2>เลือกซื้อสินค้า</h2>
-      <p>เคสและอุปกรณ์ปกป้องการ์ดสะสมที่ทางร้านคัดมาแล้ว พร้อมราคาชัดเจนทุกชิ้น</p>
+      <div class="sec-kicker" id="shopKicker">Shop</div>
+      <h2 id="shopTitle"></h2>
+      <p id="shopDesc"></p>
       <div class="sec-line"></div>
     </div>
     <div class="toolbar">
-      <input class="input grow" id="q" placeholder="ค้นหาสินค้า…">
+      <input class="input grow" id="q">
       <div class="chip-row" id="cats"></div>
     </div>
     <div class="prod-grid" id="grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))"></div>
 
     <div class="card gold-edge" style="margin-top:40px">
-      <div class="card-head"><h3>ขั้นตอนการสั่งซื้อ</h3></div>
-      <div class="grid g-3">
-        <div><div style="font-size:26px;color:var(--gold)">①</div><b>เลือกสินค้า</b>
-          <div style="font-size:12.5px;color:var(--muted);line-height:1.8">กดปุ่ม “เลือกซื้อ” ที่สินค้าที่สนใจ เลือกได้หลายรายการ</div></div>
-        <div><div style="font-size:26px;color:var(--gold)">②</div><b>ฝากชื่อและเบอร์โทร</b>
-          <div style="font-size:12.5px;color:var(--muted);line-height:1.8">กรอกชื่อ เบอร์ติดต่อกลับ และรายละเอียดเพิ่มเติมที่ต้องการ</div></div>
-        <div><div style="font-size:26px;color:var(--gold)">③</div><b>ทางร้านติดต่อกลับ</b>
-          <div style="font-size:12.5px;color:var(--muted);line-height:1.8">ทีมงานจะโทรยืนยันรายการและแจ้งวิธีชำระเงินภายใน 24 ชม.</div></div>
-      </div>
+      <div class="card-head"><h3 id="stepsTitle"></h3></div>
+      <div class="grid g-3" id="stepsBox"></div>
     </div>
   </section>
 
   <!-- ============ 3. เกี่ยวกับ ============ -->
   <section class="section" id="about">
     <div class="sec-head">
-      <div class="sec-kicker">About Us</div>
-      <h2 id="aboutTitle">ก่อนจะมาเป็น Crow’s Case</h2>
+      <div class="sec-kicker" id="aboutKicker">About Us</div>
+      <h2 id="aboutTitle"></h2>
       <div class="sec-line"></div>
     </div>
     <div class="about-grid">
@@ -103,9 +89,9 @@
   <!-- ============ 4. ติดต่อ ============ -->
   <section class="section" id="contact">
     <div class="sec-head">
-      <div class="sec-kicker">Contact</div>
-      <h2>ติดต่อเรา</h2>
-      <p>สอบถามสินค้า เช็กสต๊อก หรือขอคำแนะนำในการเลือกเคส ทักมาได้ทุกช่องทาง ยินดีตอบทุกคำถาม</p>
+      <div class="sec-kicker" id="contactKicker">Contact</div>
+      <h2 id="contactTitle"></h2>
+      <p id="contactDesc"></p>
       <div class="sec-line"></div>
     </div>
     <div class="contact-grid" id="contactCards"></div>
@@ -120,22 +106,40 @@
   <div id="footNote" style="margin-top:4px"></div>
 </footer>
 
-<button class="float-cart" id="fab" style="display:none">🛍 ตะกร้า <span class="n" id="fabN">0</span></button>
+<button class="float-cart" id="fab" style="display:none">🛍 <span id="fabLabel"></span> <span class="n" id="fabN">0</span></button>
 
 <div class="overlay" id="overlay"></div>
 <div class="toasts" id="toasts"></div>
 
 <script src="assets/js/store.js"></script>
 <script src="assets/js/ui.js"></script>
+<script src="assets/js/i18n.js"></script>
 <script>
 (function () {
   'use strict';
   var $ = UI.$, $$ = UI.$$, esc = DB.esc, money = DB.money;
+  var T = function (k, v) { return I18N.t(k, v); };
   var cart = [], filter = { cat: 'all', q: '' };
 
   DB.load();
   var S = DB.state.settings;
   function cur() { return S.currency || '฿'; }
+
+  /* ================= ตัวเลือกภาษา ================= */
+  function paintLangSwitch() {
+    $('#langSwitch').innerHTML = I18N.LANGS.map(function (l) {
+      return '<button class="lang-btn ' + (I18N.get() === l.id ? 'active' : '') + '" data-lang="' + l.id +
+        '" title="' + esc(l.label) + '" aria-pressed="' + (I18N.get() === l.id) + '">' + esc(l.short) + '</button>';
+    }).join('');
+    $$('#langSwitch .lang-btn').forEach(function (b) {
+      b.onclick = function () {
+        if (I18N.get() === b.dataset.lang) return;
+        I18N.set(b.dataset.lang);
+        renderAll();
+        UI.closeModal();
+      };
+    });
+  }
 
   /* ================= ข้อมูลร้าน & ธีม ================= */
   function paintBrand() {
@@ -144,7 +148,7 @@
     $$('[data-shopname]').forEach(function (e) { e.textContent = S.shopName; });
     $$('[data-tagline]').forEach(function (e) { e.textContent = S.tagline; });
     UI.paintLogos();
-    $('#footInfo').textContent = S.address + ' • โทร ' + S.phone + (S.line ? ' • LINE ' + S.line : '');
+    $('#footInfo').textContent = S.address + ' • ' + T('ctPhoneLb') + ' ' + S.phone + (S.line ? ' • LINE ' + S.line : '');
     $('#footNote').textContent = S.openHours + ' — ' + S.orderFooter;
     if (S.accent) {
       var lighten = function (hex, amt) {
@@ -162,13 +166,37 @@
     }
   }
 
+  /* ข้อความประจำหน้าเว็บทั้งหมด */
+  function paintStatic() {
+    $$('[data-t]').forEach(function (e) { e.textContent = T(e.dataset.t); });
+    $('#shopTitle').textContent = T('shopTitle');
+    $('#shopDesc').textContent = T('shopDesc');
+    $('#q').placeholder = T('searchPh');
+    $('#stepsTitle').textContent = T('stepsTitle');
+    $('#stepsBox').innerHTML = [1, 2, 3].map(function (i) {
+      return '<div><div style="font-size:26px;color:var(--gold)">' + ['①', '②', '③'][i - 1] + '</div>' +
+        '<b>' + esc(T('step' + i + 'T')) + '</b>' +
+        '<div style="font-size:12.5px;color:var(--muted);line-height:1.8">' + esc(T('step' + i + 'D')) + '</div></div>';
+    }).join('');
+    $('#trustBox').innerHTML = [1, 2, 3].map(function (i) {
+      return '<div class="trust-item"><div class="ic">' + ['◆', '✦', '☗'][i - 1] + '</div>' +
+        '<b>' + esc(T('trust' + i + 'T')) + '</b><span>' + esc(T('trust' + i + 'D')) + '</span></div>';
+    }).join('');
+    $('#aboutKicker').textContent = T('aboutKicker');
+    $('#contactKicker').textContent = T('contactKicker');
+    $('#contactTitle').textContent = T('contactTitle');
+    $('#contactDesc').textContent = T('contactDesc');
+    $('#heroViewAll').textContent = T('heroViewAll');
+    $('#fabLabel').textContent = T('cartFab');
+  }
+
   /* ================= 1. หน้าแรก ================= */
   function paintHome() {
     var p = DB.featured();
-    $('#heroBadge').textContent = S.heroBadge || 'สินค้าแนะนำ';
-    $('#heroTitle').textContent = S.heroTitle;
-    $('#heroText').textContent = S.heroText;
-    $('#heroBuy').textContent = S.heroCta || 'สั่งซื้อสินค้านี้';
+    $('#heroBadge').textContent = I18N.s('heroBadge') || '';
+    $('#heroTitle').textContent = I18N.s('heroTitle') || '';
+    $('#heroText').textContent = I18N.s('heroText') || '';
+    $('#heroBuy').textContent = I18N.s('heroCta') || T('btnBuy');
 
     if (!p) {
       $('#heroPrice').innerHTML = '';
@@ -179,13 +207,14 @@
     $('#heroPrice').innerHTML =
       '<span class="now">' + cur() + money(p.price) + '</span>' +
       '<span class="nm">' + esc(p.name) + '</span>' +
-      (p.qty > 0 ? '<span class="badge b-ok">พร้อมส่ง</span>' : '<span class="badge b-danger">สินค้าหมดชั่วคราว</span>');
+      (p.qty > 0 ? '<span class="badge b-ok">' + esc(T('heroReady')) + '</span>'
+                 : '<span class="badge b-danger">' + esc(T('heroSoldOut')) + '</span>');
     $('#heroImage').innerHTML =
       (p.imageType === 'url' && p.image
         ? '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '">'
         : '<span class="ico">' + esc(p.image || '📦') + '</span>') +
       '<div class="feature-tag"><b style="color:var(--gold-lt)">' + esc(p.category) + '</b>' +
-      '<span style="color:var(--muted-2)"> • รหัส ' + esc(p.sku) + '</span></div>';
+      '<span style="color:var(--muted-2)"> • ' + esc(T('heroCode')) + ' ' + esc(p.sku) + '</span></div>';
     $('#heroBuy').style.display = '';
     $('#heroBuy').disabled = p.qty <= 0;
     $('#heroBuy').onclick = function () { add(p.id); openCart(); };
@@ -196,7 +225,7 @@
     var cats = ['all'].concat(DB.state.categories);
     $('#cats').innerHTML = cats.map(function (c) {
       return '<span class="chip ' + (filter.cat === c ? 'active' : '') + '" data-c="' + esc(c) + '">' +
-        (c === 'all' ? 'ทั้งหมด' : esc(c)) + '</span>';
+        (c === 'all' ? esc(T('catAll')) : esc(c)) + '</span>';
     }).join('');
     $$('#cats .chip').forEach(function (c) {
       c.onclick = function () { filter.cat = c.dataset.c; drawCats(); drawGrid(); };
@@ -213,23 +242,23 @@
   }
   function drawGrid() {
     var list = items();
-    if (!list.length) { $('#grid').innerHTML = UI.empty('🔍', 'ไม่พบสินค้าที่ค้นหา', 'ลองเปลี่ยนคำค้นหรือเลือกหมวดอื่น'); return; }
+    if (!list.length) { $('#grid').innerHTML = UI.empty('🔍', T('noResult'), T('noResultSub')); return; }
     var feat = DB.featured();
     $('#grid').innerHTML = list.map(function (p) {
       var out = p.qty <= 0;
       var inCart = cart.find(function (c) { return c.pid === p.id; });
       return '<div class="prod" style="cursor:default">' +
-        (out ? '<span class="badge b-danger tag-out">สินค้าหมด</span>'
-             : (feat && feat.id === p.id ? '<span class="badge b-gold tag-out">แนะนำ</span>' : '')) +
+        (out ? '<span class="badge b-danger tag-out">' + esc(T('tagSoldOut')) + '</span>'
+             : (feat && feat.id === p.id ? '<span class="badge b-gold tag-out">' + esc(T('tagRecommend')) + '</span>' : '')) +
         '<div class="prod-img" style="height:160px;font-size:56px">' +
           (p.imageType === 'url' && p.image ? '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '">' : esc(p.image || '📦')) + '</div>' +
         '<div class="prod-body" style="padding:13px">' +
           '<div style="font-size:10.5px;letter-spacing:1.2px;color:var(--muted-2);text-transform:uppercase">' + esc(p.category) + '</div>' +
           '<div class="prod-nm" style="height:auto;margin:5px 0 9px;font-size:13.5px">' + esc(p.name) + '</div>' +
           '<div class="prod-price" style="font-size:18px;margin-bottom:11px">' + cur() + money(p.price) + '</div>' +
-          (out ? '<button class="btn btn-sm btn-block" disabled>สินค้าหมด</button>'
+          (out ? '<button class="btn btn-sm btn-block" disabled>' + esc(T('btnSoldOut')) + '</button>'
                : '<button class="btn btn-sm ' + (inCart ? '' : 'btn-gold') + ' btn-block" data-add="' + p.id + '">' +
-                 (inCart ? '✓ เลือกแล้ว (' + inCart.qty + ')' : 'เลือกซื้อ') + '</button>') +
+                 (inCart ? esc(T('btnPicked')) + ' (' + inCart.qty + ')' : esc(T('btnBuy'))) + '</button>') +
         '</div></div>';
     }).join('');
     $$('[data-add]').forEach(function (b) { b.onclick = function () { add(b.dataset.add); }; });
@@ -237,9 +266,9 @@
 
   /* ================= 3. เกี่ยวกับ ================= */
   function paintAbout() {
-    $('#aboutTitle').textContent = S.aboutTitle || 'เกี่ยวกับเรา';
-    $('#aboutEst').textContent = S.founded ? 'ก่อตั้งเมื่อปี ' + S.founded : '';
-    $('#aboutBody').innerHTML = String(S.aboutText || '').split(/\n\s*\n/).map(function (t) {
+    $('#aboutTitle').textContent = I18N.s('aboutTitle') || '';
+    $('#aboutEst').textContent = S.founded ? T('aboutEst', { year: S.founded }) : '';
+    $('#aboutBody').innerHTML = String(I18N.s('aboutText') || '').split(/\n\s*\n/).map(function (t) {
       return '<p>' + esc(t.trim()).replace(/\n/g, '<br>') + '</p>';
     }).join('');
     var pts = S.aboutPoints || [];
@@ -255,20 +284,20 @@
     if (S.line) {
       cards.push({
         href: S.lineUrl || ('https://line.me/R/ti/p/' + encodeURIComponent(S.line)),
-        ic: '💬', lb: 'LINE Official', vl: S.line, sb: 'ทักแชตสอบถาม / สั่งซื้อได้ทันที'
+        ic: '💬', lb: T('ctLineLb'), vl: S.line, sb: T('ctLineSb')
       });
     }
     if (S.facebook || S.facebookUrl) {
       cards.push({
         href: S.facebookUrl || ('https://www.facebook.com/search/top?q=' + encodeURIComponent(S.facebook)),
-        ic: '📘', lb: 'Facebook', vl: S.facebook || 'เพจของเรา', sb: 'ดูสินค้าใหม่และรีวิวจากลูกค้า'
+        ic: '📘', lb: T('ctFbLb'), vl: S.facebook || T('ctFbFallback'), sb: T('ctFbSb')
       });
     }
     if (S.phone) {
-      cards.push({ href: 'tel:' + String(S.phone).replace(/[^0-9+]/g, ''), ic: '📞', lb: 'โทรศัพท์', vl: S.phone, sb: 'โทรคุยกับทีมงานโดยตรง' });
+      cards.push({ href: 'tel:' + String(S.phone).replace(/[^0-9+]/g, ''), ic: '📞', lb: T('ctPhoneLb'), vl: S.phone, sb: T('ctPhoneSb') });
     }
     if (S.email) {
-      cards.push({ href: 'mailto:' + S.email, ic: '✉', lb: 'อีเมล', vl: S.email, sb: 'สำหรับงานขายส่ง / ธุรกิจ' });
+      cards.push({ href: 'mailto:' + S.email, ic: '✉', lb: T('ctMailLb'), vl: S.email, sb: T('ctMailSb') });
     }
     $('#contactCards').innerHTML = cards.map(function (c) {
       return '<a class="contact-card" href="' + esc(c.href) + '" target="_blank" rel="noopener">' +
@@ -277,9 +306,9 @@
     }).join('');
 
     $('#contactInfo').innerHTML =
-      box('ที่ตั้งร้าน', esc(S.address) + (S.mapUrl ? '<br><a href="' + esc(S.mapUrl) + '" target="_blank" rel="noopener">เปิดแผนที่ →</a>' : '')) +
-      box('เวลาทำการ', esc(S.openHours)) +
-      box('การสั่งซื้อออนไลน์', 'สั่งผ่านหน้าเว็บได้ตลอด 24 ชม. ทีมงานจะติดต่อกลับเพื่อยืนยันรายการภายใน 1 วันทำการ');
+      box(T('infoAddr'), esc(S.address) + (S.mapUrl ? '<br><a href="' + esc(S.mapUrl) + '" target="_blank" rel="noopener">' + esc(T('openMap')) + '</a>' : '')) +
+      box(T('infoHours'), esc(S.openHours)) +
+      box(T('infoOnline'), esc(T('infoOnlineV')));
     function box(l, v) {
       return '<div class="info-box"><div class="lb">' + esc(l) + '</div><div class="vl">' + v + '</div></div>';
     }
@@ -288,11 +317,11 @@
   /* ================= ตะกร้า ================= */
   function add(pid) {
     var p = DB.product(pid); if (!p) return;
-    if (p.qty <= 0) return UI.toast('สินค้าชิ้นนี้หมดชั่วคราว', 'warn');
+    if (p.qty <= 0) return UI.toast(T('soldOutToast'), 'warn');
     var l = cart.find(function (c) { return c.pid === pid; });
     if (l) l.qty++;
     else cart.push({ pid: p.id, name: p.name, image: p.image, imageType: p.imageType, price: p.price, qty: 1 });
-    UI.toast('เพิ่ม ' + p.name + ' แล้ว', 'ok', 1500);
+    UI.toast(T('addedToast', { name: p.name }), 'ok', 1500);
     drawGrid(); drawFab();
   }
   function drawFab() {
@@ -305,9 +334,9 @@
     if (!cart.length) return;
     var total = cart.reduce(function (a, c) { return a + c.price * c.qty; }, 0);
     UI.modal({
-      title: 'รายการที่เลือก & ข้อมูลติดต่อกลับ', wide: true,
+      title: T('cartTitle'), wide: true,
       body:
-        '<div class="sec-title">สินค้าที่คุณเลือก</div>' +
+        '<div class="sec-title">' + esc(T('cartItems')) + '</div>' +
         '<div id="cartBox">' + cart.map(function (c, i) {
           return '<div class="ci">' + UI.imgHtml(c, 'ci-ico') +
             '<div style="flex:1;min-width:0"><div class="ci-nm">' + esc(c.name) + '</div>' +
@@ -317,17 +346,19 @@
             '<button class="qbtn" data-m="+" data-i="' + i + '">+</button>' +
             '<button class="qbtn" data-m="x" data-i="' + i + '" style="color:#e0574f">×</button></div></div>';
         }).join('') + '</div>' +
-        '<div class="sumline total" style="margin-bottom:20px"><span>ยอดรวมโดยประมาณ</span><b>' + cur() + money(total) + '</b></div>' +
-        '<div class="sec-title">ข้อมูลสำหรับติดต่อกลับ</div>' +
+        '<div class="sumline total" style="margin-bottom:20px"><span>' + esc(T('cartTotal')) + '</span><b>' + cur() + money(total) + '</b></div>' +
+        '<div class="sec-title">' + esc(T('cartInfo')) + '</div>' +
         '<div class="row">' +
-          '<div class="field"><label>ชื่อผู้สั่งซื้อ <span class="req">*</span></label><input class="input" id="cName" placeholder="ชื่อ-นามสกุล"></div>' +
-          '<div class="field"><label>เบอร์โทรติดต่อกลับ <span class="req">*</span></label><input class="input" id="cPhone" type="tel" placeholder="08X-XXX-XXXX"></div>' +
+          '<div class="field"><label>' + esc(T('fName')) + ' <span class="req">*</span></label>' +
+            '<input class="input" id="cName" placeholder="' + esc(T('fNamePh')) + '"></div>' +
+          '<div class="field"><label>' + esc(T('fPhone')) + ' <span class="req">*</span></label>' +
+            '<input class="input" id="cPhone" type="tel" placeholder="' + esc(T('fPhonePh')) + '"></div>' +
         '</div>' +
-        '<div class="field"><label>รายละเอียดเพิ่มเติม</label>' +
-          '<textarea class="input" id="cNote" rows="3" placeholder="เช่น ช่วงเวลาที่สะดวกให้ติดต่อกลับ / ต้องการดูสินค้าจริงก่อน"></textarea></div>' +
-        '<div class="tip"><span class="i">🔒</span><div>ข้อมูลของคุณใช้สำหรับติดต่อยืนยันคำสั่งซื้อเท่านั้น ทางร้านจะโทรกลับภายใน 24 ชั่วโมง ' +
-          '<b>ยังไม่มีการเรียกเก็บเงินในขั้นตอนนี้</b></div></div>',
-      okText: 'ส่งคำสั่งซื้อ ให้ร้านติดต่อกลับ',
+        '<div class="field"><label>' + esc(T('fNote')) + '</label>' +
+          '<textarea class="input" id="cNote" rows="3" placeholder="' + esc(T('fNotePh')) + '"></textarea></div>' +
+        '<div class="tip"><span class="i">🔒</span><div>' + T('privacy') + '</div></div>',
+      footHtml: '<button class="btn btn-ghost" data-close>' + esc(T('btnCancel')) + '</button>' +
+        '<button class="btn btn-gold" id="mdOk">' + esc(T('submitOrder')) + '</button>',
       onRender: function (ov) {
         $$('.qbtn', ov).forEach(function (b) {
           b.onclick = function () {
@@ -342,8 +373,8 @@
       },
       onOk: function (ov) {
         var n = $('#cName', ov).value.trim(), p = $('#cPhone', ov).value.trim();
-        if (!n) { UI.toast('กรุณากรอกชื่อผู้สั่งซื้อ', 'err'); return false; }
-        if (!/^[0-9+\-\s()]{8,20}$/.test(p)) { UI.toast('กรุณากรอกเบอร์โทรให้ถูกต้อง', 'err'); return false; }
+        if (!n) { UI.toast(T('errName'), 'err'); return false; }
+        if (!/^[0-9+\-\s()]{8,20}$/.test(p)) { UI.toast(T('errPhone'), 'err'); return false; }
         var o = DB.placeOrder({ name: n, phone: p, note: $('#cNote', ov).value.trim(), items: cart.slice() });
         cart = []; drawGrid(); drawFab(); UI.closeModal();
         thanks(o);
@@ -354,16 +385,17 @@
 
   function thanks(o) {
     UI.modal({
-      title: 'ได้รับคำสั่งซื้อของคุณแล้ว',
+      title: T('thanksTitle'),
       body: '<div style="text-align:center;padding:8px 0 4px">' +
         '<div style="font-size:52px">✅</div>' +
-        '<h3 style="margin:10px 0 6px">ขอบคุณ คุณ' + esc(o.name) + '</h3>' +
-        '<p style="color:var(--muted);line-height:1.8">หมายเลขคำสั่งซื้อของคุณคือ <b class="gold-text">' + esc(o.code) + '</b><br>' +
-        'ทางร้านจะติดต่อกลับที่เบอร์ <b>' + esc(o.phone) + '</b> ภายใน 24 ชั่วโมง<br>' +
-        'ยอดรวมโดยประมาณ <b>' + cur() + money(o.total) + '</b></p>' +
-        '<div class="tip" style="text-align:left;margin-top:18px"><span class="i">📞</span><div>หากต้องการสอบถามเร่งด่วน โทร <b>' +
-        esc(S.phone) + '</b>' + (S.line ? ' หรือ LINE <b>' + esc(S.line) + '</b>' : '') + '</div></div></div>',
-      footHtml: '<button class="btn btn-gold" data-close>เลือกซื้อสินค้าต่อ</button>'
+        '<h3 style="margin:10px 0 6px">' + esc(T('thanksHi', { name: o.name })) + '</h3>' +
+        '<p style="color:var(--muted);line-height:1.8">' + esc(T('thanksOrderNo')) + ' <b class="gold-text">' + esc(o.code) + '</b><br>' +
+        esc(T('thanksCallback', { phone: o.phone })) + '<br>' +
+        esc(T('thanksTotal')) + ' <b>' + cur() + money(o.total) + '</b></p>' +
+        '<div class="tip" style="text-align:left;margin-top:18px"><span class="i">📞</span><div>' +
+        esc(T('thanksUrgent')) + ' <b>' + esc(S.phone) + '</b>' +
+        (S.line ? ' • LINE <b>' + esc(S.line) + '</b>' : '') + '</div></div></div>',
+      footHtml: '<button class="btn btn-gold" data-close>' + esc(T('thanksBtn')) + '</button>'
     });
   }
 
@@ -395,7 +427,9 @@
   });
 
   function renderAll() {
-    paintBrand(); paintHome(); drawCats(); drawGrid(); paintAbout(); paintContact(); drawFab(); syncNav();
+    paintLangSwitch(); paintBrand(); paintStatic();
+    paintHome(); drawCats(); drawGrid(); paintAbout(); paintContact();
+    drawFab(); syncNav();
   }
   renderAll();
 })();

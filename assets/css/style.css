@@ -35,7 +35,7 @@ body{
     radial-gradient(900px 500px at 0% 105%,rgba(212,175,55,.05),transparent 60%),
     var(--bg);
   color:var(--text);
-  font-family:"Noto Sans Thai","Prompt",-apple-system,"Segoe UI",sans-serif;
+  font-family:"Noto Sans Thai","Noto Sans SC","Prompt",-apple-system,"Segoe UI",sans-serif;
   font-size:14.5px;
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
@@ -321,6 +321,14 @@ tbody tr:hover{background:rgba(212,175,55,.045)}
 .nav-link:hover{color:var(--text);background:rgba(212,175,55,.07)}
 .nav-link.active{color:var(--gold-lt);background:rgba(212,175,55,.14);border-color:rgba(212,175,55,.28)}
 
+/* ตัวสลับภาษา */
+.lang-switch{display:flex;gap:3px;margin-left:14px;padding:3px;border-radius:22px;
+  background:var(--panel-2);border:1px solid var(--line-soft);flex-shrink:0}
+.lang-btn{padding:6px 12px;border-radius:18px;border:none;background:transparent;cursor:pointer;
+  font-size:12.5px;font-weight:700;color:var(--muted);transition:.15s;line-height:1.4;white-space:nowrap}
+.lang-btn:hover{color:var(--gold-lt);background:rgba(212,175,55,.09)}
+.lang-btn.active{background:var(--grad-gold);color:#14110a}
+
 .shop-wrap{max-width:1200px;margin:0 auto;padding:0 30px}
 .section{padding:66px 0;scroll-margin-top:80px;border-top:1px solid rgba(255,255,255,.04)}
 .section:first-of-type{border-top:none}
@@ -419,7 +427,8 @@ tbody tr:hover{background:rgba(212,175,55,.045)}
   .kpi .val{font-size:21px}
   .shop-wrap,.shop-nav{padding-left:16px;padding-right:16px}
   .shop-nav{flex-wrap:wrap;gap:10px;padding-top:10px;padding-bottom:10px}
-  .nav-links{margin-left:0;width:100%;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  .nav-links{order:2;width:100%;margin-left:0;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  .lang-switch{order:1;margin-left:auto}
   .nav-link{padding:7px 13px;font-size:13px}
   .section{padding:46px 0;scroll-margin-top:118px}
   .hero-split{padding:34px 0 20px}
