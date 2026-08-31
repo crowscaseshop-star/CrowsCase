@@ -377,6 +377,7 @@
           (['confirmed', 'contacted'].indexOf(o.status) > -1 ? '<button class="btn btn-sm btn-gold" data-close-sale="' + o.id + '">💰 ปิดการขาย (สร้างบิล)</button>' : '') +
           '<button class="btn btn-sm" data-note="' + o.id + '">📝 บันทึกหมายเหตุ</button>' +
           (['done', 'cancel'].indexOf(o.status) < 0 ? '<button class="btn btn-sm btn-danger" data-st="cancel" data-id="' + o.id + '">ยกเลิกออเดอร์</button>' : '') +
+          (DB.can('sale.void') ? '<button class="btn btn-sm btn-danger" data-odel="' + o.id + '" title="ลบออกจากระบบถาวร">🗑 ลบถาวร</button>' : '') +
           '</div>'
           : '<div style="font-size:12px;color:var(--muted-2)">คุณไม่มีสิทธิ์จัดการออเดอร์ (ดูอย่างเดียว)</div>') +
         '</div>';
@@ -389,6 +390,18 @@
         o.handledBy = DB.currentUser().name; o.handledAt = DB.nowISO();
         DB.logAct('อัปเดตออเดอร์', o.code + ' → ' + DB.ORDER_STATUS[o.status].name);
         UI.toast('อัปเดตสถานะแล้ว', 'ok'); App.refreshBadges(); App.render();
+      };
+    });
+    $$('[data-odel]', box).forEach(function (b) {
+      b.onclick = function () {
+        var o = DB.state.orders.find(function (x) { return x.id === b.dataset.odel; });
+        UI.confirmBox('ลบออเดอร์ถาวร', 'ลบ <b>' + esc(o.code) + '</b> (' + esc(o.name) + ') ออกจากระบบถาวร?<br>' +
+          '<span style="font-size:12px;color:var(--muted-2)">ใช้สำหรับล้างรายการทดสอบหรือออเดอร์ขยะ — ถ้าเป็นลูกค้าจริงที่ไม่ซื้อแล้ว แนะนำให้กด “ยกเลิกออเดอร์” แทนเพื่อเก็บประวัติไว้</span>',
+          'ลบถาวร', function () {
+            DB.state.orders = DB.state.orders.filter(function (x) { return x.id !== o.id; });
+            DB.logAct('ลบออเดอร์ถาวร', o.code + ' • ' + o.name);
+            UI.toast('ลบออเดอร์แล้ว', 'ok'); App.refreshBadges(); App.render();
+          }, true);
       };
     });
     $$('[data-note]', box).forEach(function (b) {

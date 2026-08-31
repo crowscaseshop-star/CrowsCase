@@ -93,14 +93,49 @@
     return await afterLogin();
   }
 
+  /* เช็คว่าฐานข้อมูลบนคลาวด์ยังว่างอยู่ไหม (ไม่แตะข้อมูลในเครื่อง) */
+  async function cloudIsEmpty() {
+    var names = TABLES.map(function (t) { return t.table; }).concat('settings');
+    for (var i = 0; i < names.length; i++) {
+      try {
+        var r = await sb.from(names[i]).select('id').limit(1);
+        if (!r.error && r.data && r.data.length) return false;
+      } catch (e) { /* อ่านไม่ได้ = ถือว่าว่าง */ }
+    }
+    return true;
+  }
+
+  /* อัปโหลดชุดเริ่มต้น: เอาเฉพาะสินค้าและการตั้งค่าเว็บไซต์ขึ้นไป
+     ไม่เอายอดขาย/ออเดอร์/บันทึกตัวอย่างที่เป็นข้อมูลสาธิตในเครื่องขึ้นไปด้วย */
+  async function pushInitial() {
+    var st = DB.state, now = new Date().toISOString();
+    var prods = (st.products || []).filter(function (p) { return p && p.id; })
+      .map(function (p) { return { id: p.id, data: p, updated_at: now }; });
+    if (prods.length) {
+      var r = await sb.from('products').upsert(prods);
+      if (r.error) throw new Error('อัปโหลดสินค้าไม่สำเร็จ: ' + r.error.message);
+    }
+    var rs = await sb.from('settings').upsert({
+      id: 'main', data: { settings: st.settings, categories: st.categories }, updated_at: now
+    });
+    if (rs.error) throw new Error('อัปโหลดการตั้งค่าไม่สำเร็จ: ' + rs.error.message);
+
+    /* ล้างข้อมูลสาธิตในเครื่องที่ไม่ได้อัปขึ้นคลาวด์ เพื่อให้ตัวเลขตรงกับของจริง */
+    st.sales = []; st.orders = []; st.stockLogs = []; st.activity = [];
+    var me = DB.currentUser();
+    st.users = (st.users || []).filter(function (u) { return !u.pass; });
+    if (me && !st.users.some(function (u) { return u.id === me.id; })) st.users.push(me);
+  }
+
   /* เรียกหลังล็อกอินสำเร็จ: ดึงข้อมูล + เปิดเรียลไทม์ */
   async function afterLogin() {
     try {
-      var res = await pull();
-      if (res.empty) {
-        /* คลาวด์ยังว่าง → อัปโหลดข้อมูลที่มีในเครื่องขึ้นไปเป็นชุดเริ่มต้น */
-        snap = {};
-        await push(true);
+      if (await cloudIsEmpty()) {
+        /* ใช้งานครั้งแรก — ยกสินค้าและการตั้งค่าจากเครื่องนี้ขึ้นไปตั้งต้น */
+        await pushInitial();
+        await pull();
+      } else {
+        await pull();
       }
       takeSnapshot();
       subscribe();
@@ -122,6 +157,9 @@
         var r = await sb.from(t.table).select('id,data');
         if (r.error) { console.warn('[cloud] อ่าน ' + t.table + ' ไม่ได้:', r.error.message); continue; }
         if (r.data.length) empty = false;
+        /* หน้าเว็บลูกค้า: ถ้าคลาวด์ยังไม่มีสินค้า ให้ใช้ของที่แคชไว้ในเครื่องต่อไป
+           จะได้ไม่เกิดหน้าร้านว่างเปล่าระหว่างที่ทางร้านยังไม่ได้อัปโหลดสินค้า */
+        if (mode === 'public' && !r.data.length) continue;
         st[t.key] = r.data.map(function (x) { return x.data; }).filter(Boolean);
       } catch (e) { console.warn('[cloud] อ่าน ' + t.table + ' ล้มเหลว:', e.message); }
     }
@@ -176,12 +214,19 @@
       var t = tabs[i], cur = {}, up = [], prev = snap[t.key] || {};
       (st[t.key] || []).forEach(function (row) {
         if (!row || !row.id) return;
+        /* ข้ามบัญชีตัวอย่างในเครื่อง (ยังไม่มีบัญชีจริงใน Supabase Auth) */
+        if (t.key === 'users' && row.pass) return;
         var js = JSON.stringify(row);
         cur[row.id] = js;
         if (force || prev[row.id] !== js) up.push({ id: row.id, data: row, updated_at: now });
       });
       if (up.length) {
-        var r = await sb.from(t.table).upsert(up);
+        /* ฝั่งลูกค้ามีสิทธิ์ "สร้าง" ออเดอร์อย่างเดียว จึงต้องใช้ insert ล้วน
+           (upsert = INSERT ... ON CONFLICT UPDATE ซึ่งต้องมีสิทธิ์ UPDATE ด้วย
+            ถ้าเปิดสิทธิ์นั้นให้ลูกค้า จะกลายเป็นว่าใครก็แก้ออเดอร์คนอื่นได้) */
+        var r = mode === 'public'
+          ? await sb.from(t.table).insert(up)
+          : await sb.from(t.table).upsert(up);
         if (r.error) { console.warn('[cloud] เขียน ' + t.table + ' ไม่ได้:', r.error.message); continue; }
       }
       if (mode !== 'public') {

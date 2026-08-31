@@ -1,17 +1,17 @@
 /* ============================================================
    config.js — ตั้งค่าการเชื่อมต่อ Supabase
    ------------------------------------------------------------
-   วิธีตั้งค่า:
-   1. เปิด Supabase → เลือกโปรเจกต์ → Project Settings → API
-   2. คัดลอก "Project URL" มาใส่ SUPABASE_URL
-   3. คัดลอก "anon / publishable key" มาใส่ SUPABASE_ANON_KEY
-      ⚠️ ใช้ anon key เท่านั้น ห้ามใช้ service_role key เด็ดขาด
-         (anon key ออกแบบมาให้ฝังในเว็บได้ ความปลอดภัยคุมด้วย RLS ในฐานข้อมูล)
-   4. อย่าลืมรันไฟล์ supabase/schema.sql ใน SQL Editor ก่อนใช้งาน
+   ค่าด้านล่างคือ Project URL และ anon (publishable) key
+   ซึ่งออกแบบมาให้ฝังในหน้าเว็บได้อย่างปลอดภัย
+   ความปลอดภัยจริงคุมด้วย Row Level Security ในฐานข้อมูล
+   (ดูนโยบายทั้งหมดได้ที่ supabase/schema.sql)
 
-   ถ้าเว้นว่างไว้ ระบบจะทำงานแบบออฟไลน์ (เก็บข้อมูลในเครื่อง) เหมือนเดิม
+   ห้ามนำ service_role key มาใส่ในไฟล์นี้เด็ดขาด
+   เพราะ key นั้นข้ามทุกสิทธิ์ และไฟล์นี้เปิดเผยต่อสาธารณะ
+
+   ถ้าต้องการกลับไปใช้งานแบบออฟไลน์ ให้เปลี่ยนทั้งสองค่าเป็นค่าว่าง ''
    ============================================================ */
 window.CC_CONFIG = {
-  SUPABASE_URL: '',
-  SUPABASE_ANON_KEY: ''
+  SUPABASE_URL: 'https://ihzgtlsivjuapfnugdnw.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imloemd0bHNpdmp1YXBmbnVnZG53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODAxMzMsImV4cCI6MjEwMzc1NjEzM30.3Btsp-Sut3hZKhgK03G5D46oJrv85oImSnS8BRR8U30'
 };
