@@ -33,6 +33,7 @@
     $$('[data-shopname]').forEach(function (e) { e.textContent = S.shopName; });
     $$('[data-shoplogo]').forEach(function (e) { e.textContent = S.logo; });
     $$('[data-tagline]').forEach(function (e) { e.textContent = S.tagline; });
+    UI.paintLogos();
   }
   function lighten(hex, amt) {
     var n = parseInt(hex.slice(1), 16);

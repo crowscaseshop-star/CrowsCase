@@ -110,18 +110,18 @@
   /* ---------- Seed ---------- */
   function seedProducts() {
     var raw = [
-      ['CRW-001', 'สร้อยคอทองคำ 96.5% ลายผ่าหวาย', 'เครื่องประดับ', 32000, 38900, 6, 2, '📿'],
-      ['CRW-002', 'แหวนเพชรแท้ 0.30 กะรัต', 'เครื่องประดับ', 24500, 31500, 4, 2, '💍'],
-      ['CRW-003', 'นาฬิกาข้อมือหน้าปัดทอง', 'นาฬิกา', 8900, 14500, 9, 3, '⌚'],
-      ['CRW-004', 'กำไลข้อมือทองคำแท่ง', 'เครื่องประดับ', 18500, 23900, 3, 3, '⚜'],
-      ['CRW-005', 'ต่างหูมุกน้ำจืด', 'เครื่องประดับ', 1200, 2490, 24, 6, '🦪'],
-      ['CRW-006', 'กระเป๋าหนังแท้รุ่นพรีเมียม', 'เครื่องหนัง', 4200, 7900, 11, 4, '👜'],
-      ['CRW-007', 'เข็มขัดหนังหัวทอง', 'เครื่องหนัง', 1500, 2900, 18, 5, '🎗'],
-      ['CRW-008', 'กล่องใส่เครื่องประดับกำมะหยี่', 'ของตกแต่ง', 350, 890, 40, 10, '🎁'],
-      ['CRW-009', 'น้ำหอม Gold Edition 50ml', 'น้ำหอม', 1900, 3590, 14, 5, '🧴'],
-      ['CRW-010', 'ปากกาหมึกซึมชุบทอง', 'ของตกแต่ง', 780, 1690, 2, 5, '🖋'],
-      ['CRW-011', 'แว่นตากันแดดกรอบทอง', 'แฟชั่น', 1600, 3290, 8, 4, '🕶'],
-      ['CRW-012', 'ผ้าพันคอไหมพิมพ์ลาย', 'แฟชั่น', 900, 1990, 0, 4, '🧣']
+      ['CRW-001', 'Crow’s Case Signature — Magnetic Holder 35pt', 'Magnetic Holder', 210, 490, 24, 6, '🖤'],
+      ['CRW-002', 'Magnetic Holder 55pt กันรอย UV', 'Magnetic Holder', 240, 550, 18, 6, '🧲'],
+      ['CRW-003', 'Magnetic Holder 130pt สำหรับการ์ดหนา', 'Magnetic Holder', 320, 690, 9, 4, '💠'],
+      ['CRW-004', 'Toploader ใสพิเศษ 35pt (แพ็ค 25 ชิ้น)', 'Toploader', 95, 249, 40, 10, '📇'],
+      ['CRW-005', 'Toploader ขอบทอง Limited (แพ็ค 10 ชิ้น)', 'Toploader', 180, 420, 12, 5, '✨'],
+      ['CRW-006', 'Perfect Fit Sleeve ใส (แพ็ค 100 ใบ)', 'Sleeve', 60, 159, 60, 15, '🗂'],
+      ['CRW-007', 'Premium Matte Sleeve ดำ (แพ็ค 100 ใบ)', 'Sleeve', 110, 259, 35, 10, '🃏'],
+      ['CRW-008', 'กล่องเก็บการ์ด 1,000 ใบ ฝาแม่เหล็ก', 'Storage Box', 480, 990, 8, 3, '📦'],
+      ['CRW-009', 'กล่องอะคริลิกโชว์การ์ด Slab', 'Storage Box', 650, 1390, 5, 3, '🧳'],
+      ['CRW-010', 'ขาตั้งโชว์การ์ดอะคริลิก (คู่)', 'Display Stand', 90, 229, 30, 8, '🪞'],
+      ['CRW-011', 'ขาตั้งโชว์ไม้วอลนัท งานคราฟต์', 'Display Stand', 380, 890, 4, 3, '🪵'],
+      ['CRW-012', 'ชุดผ้าเช็ดไมโครไฟเบอร์ + ถุงมือ', 'อุปกรณ์เสริม', 70, 189, 0, 6, '🧤']
     ];
     return raw.map(function (r) {
       return {
@@ -190,22 +190,44 @@
       version: 1,
       settings: {
         shopName: "Crow's Case",
-        tagline: 'PREMIUM COLLECTION',
+        tagline: 'PREMIUM CARD PROTECTION',
         logo: '♛',
+        logoUrl: 'assets/img/logo.png',
         phone: '02-000-0000',
         line: '@crowscase',
+        lineUrl: '',
+        facebook: 'Crow’s Case',
+        facebookUrl: '',
+        email: '',
         address: '123 ถนนสุขุมวิท กรุงเทพฯ 10110',
+        mapUrl: '',
         openHours: 'ทุกวัน 10:00 - 20:00 น.',
         currency: '฿',
         vatRate: 7,
         vatEnabled: false,
         lowStockAlert: true,
-        heroTitle: 'ความหรูหรา ที่คัดสรรมาเพื่อคุณ',
-        heroText: 'เลือกสินค้าที่ต้องการ กรอกชื่อและเบอร์โทร แล้วทางร้านจะติดต่อกลับเพื่อยืนยันคำสั่งซื้อภายใน 24 ชั่วโมง',
+
+        /* ---- หน้าแรก (Hero) ---- */
+        featuredId: products[0].id,
+        heroBadge: 'สินค้าแนะนำประจำเดือน',
+        heroTitle: 'ปกป้องการ์ดใบโปรด ด้วยงานคราฟต์ระดับพรีเมียม',
+        heroText: 'Crow’s Case คัดสรรวัสดุและงานประกอบอย่างพิถีพิถัน เพื่อให้การ์ดสะสมของคุณคงสภาพสมบูรณ์ที่สุดในทุกการเก็บรักษาและทุกการเดินทาง',
+        heroCta: 'ดูรายละเอียดสินค้า',
+
+        /* ---- เกี่ยวกับเรา ---- */
+        aboutTitle: 'ก่อนจะมาเป็น Crow’s Case',
+        aboutText: 'เราเริ่มต้นจากนักสะสมการ์ดกลุ่มเล็ก ๆ ที่เจ็บใจทุกครั้งเมื่อการ์ดใบสำคัญมีรอยขนแมว มุมช้ำ หรือซีดจากแสงแดด เราจึงลงมือหาวัสดุและออกแบบเคสด้วยตัวเอง ทดสอบซ้ำแล้วซ้ำเล่านับร้อยครั้ง จนได้เคสที่เรากล้าใส่การ์ดใบที่หวงที่สุดของตัวเอง\n\nชื่อ Crow’s Case มาจากนิสัยของอีกา — นกที่ขึ้นชื่อเรื่องการเก็บสะสมของมีค่าและปกป้องรังของมันอย่างที่สุด เช่นเดียวกับที่เราตั้งใจปกป้องของสะสมของคุณ',
+        aboutPoints: [
+          { t: 'วัสดุคัดเกรด', d: 'อะคริลิกใสพิเศษกันรอยและตัดแสง UV คงความคมชัดของงานพิมพ์ในระยะยาว' },
+          { t: 'งานประกอบมือ', d: 'ตรวจสอบทุกชิ้นก่อนส่ง ขอบเรียบสนิท ไม่บาดมือ ไม่บาดการ์ด' },
+          { t: 'ดูแลหลังการขาย', d: 'มีปัญหาทักได้ตลอด เปลี่ยนคืนได้ภายใน 7 วันหากสินค้าไม่สมบูรณ์' }
+        ],
+        founded: '2024',
+
         orderFooter: 'ขอบคุณที่ไว้วางใจ Crow’s Case'
       },
       users: users,
-      categories: ['เครื่องประดับ', 'นาฬิกา', 'เครื่องหนัง', 'น้ำหอม', 'แฟชั่น', 'ของตกแต่ง'],
+      categories: ['Magnetic Holder', 'Toploader', 'Sleeve', 'Storage Box', 'Display Stand', 'อุปกรณ์เสริม'],
       products: products,
       sales: seedSales(products, users),
       orders: [
@@ -340,6 +362,12 @@
   }
   function newOrders() { return state.orders.filter(function (o) { return o.status === 'new'; }); }
 
+  /* สินค้าเด่นที่โชว์บนหน้าแรกของเว็บ (ตั้งค่าได้ในแดชบอร์ด) */
+  function featured() {
+    var live = state.products.filter(function (p) { return p.active; });
+    return live.find(function (p) { return p.id === state.settings.featuredId; }) || live[0] || null;
+  }
+
   function nextInvoice() {
     var d = new Date();
     var pre = 'INV' + d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
@@ -415,7 +443,7 @@
     login: login, logout: logout, currentUser: currentUser, can: can, canSee: canSee, hash: hash,
     logAct: logAct, stockLog: stockLog,
     product: product, activeSales: activeSales, salesBetween: salesBetween,
-    sumTotal: sumTotal, sumProfit: sumProfit, lowStock: lowStock, newOrders: newOrders,
+    sumTotal: sumTotal, sumProfit: sumProfit, lowStock: lowStock, newOrders: newOrders, featured: featured,
     commitSale: commitSale, voidSale: voidSale, placeOrder: placeOrder,
     exportJSON: exportJSON, importJSON: importJSON,
     uid: uid, nowISO: nowISO, todayKey: todayKey,

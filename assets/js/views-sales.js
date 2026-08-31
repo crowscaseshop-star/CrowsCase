@@ -411,8 +411,10 @@
 
   function receiptHtml(s) {
     var S = DB.state.settings;
+    var logo = new URL(UI.logoSrc(), location.href).href;
     return '<div class="receipt" id="rcpt">' +
-      '<div class="c"><b style="font-size:15px">' + esc(S.shopName) + '</b><br>' + esc(S.address) + '<br>โทร ' + esc(S.phone) + '</div><hr>' +
+      '<div class="c"><img src="' + esc(logo) + '" alt="" style="width:74px;height:74px;object-fit:contain;margin-bottom:6px"><br>' +
+      '<b style="font-size:15px">' + esc(S.shopName) + '</b><br>' + esc(S.address) + '<br>โทร ' + esc(S.phone) + '</div><hr>' +
       '<div>เลขที่: ' + esc(s.code) + '</div><div>วันที่: ' + DB.fmtDateTime(s.ts) + '</div>' +
       '<div>พนักงาน: ' + esc(s.staffName) + '</div>' + (s.customer ? '<div>ลูกค้า: ' + esc(s.customer) + '</div>' : '') + '<hr>' +
       s.items.map(function (i) {

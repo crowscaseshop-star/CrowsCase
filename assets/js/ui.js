@@ -67,6 +67,34 @@
     return '<span class="' + (cls || 'thumb') + '">' + esc((item && item.image) || '📦') + '</span>';
   }
 
+  /* ---------- โลโก้ร้าน ----------
+     ใช้ไฟล์ที่ตั้งไว้ใน settings.logoUrl (ค่าเริ่มต้น assets/img/logo.png)
+     ถ้าโหลดไม่ได้จะสลับไปใช้โลโก้สำรอง assets/img/logo.svg อัตโนมัติ */
+  function logoSrc() {
+    var u = (DB.state.settings.logoUrl || '').trim();
+    return u || 'assets/img/logo.svg';
+  }
+  function logoImg(cls, alt) {
+    return '<img class="' + (cls || 'logo-img') + '" src="' + esc(logoSrc()) + '" alt="' + esc(alt || DB.state.settings.shopName) +
+      '" onerror="this.onerror=null;this.src=\'assets/img/logo.svg\'">';
+  }
+  /* วางโลโก้ลงในทุก element ที่มี data-logo */
+  function paintLogos(root) {
+    $$('[data-logo]', root || document).forEach(function (e) {
+      e.innerHTML = logoImg(e.dataset.logo || 'logo-img');
+    });
+    setFavicon();
+  }
+  /* ตั้งไอคอนแท็บ — ถ้าไฟล์โลโก้หลักโหลดไม่ได้ ให้ใช้โลโก้สำรอง */
+  function setFavicon() {
+    var ico = document.querySelector('link[rel="icon"]');
+    if (!ico) return;
+    var src = logoSrc(), probe = new Image();
+    probe.onload = function () { ico.href = src; };
+    probe.onerror = function () { ico.href = 'assets/img/logo.svg'; };
+    probe.src = src;
+  }
+
   /* ---------- กราฟแท่ง SVG ---------- */
   function barChart(data, opts) {
     opts = opts || {};
@@ -145,6 +173,7 @@
   global.UI = {
     $: $, $$: $$, toast: toast, modal: modal, closeModal: closeModal, confirmBox: confirmBox,
     barChart: barChart, donut: donut, downloadCSV: downloadCSV, downloadBlob: downloadBlob,
-    empty: empty, tip: tip, imgHtml: imgHtml
+    empty: empty, tip: tip, imgHtml: imgHtml,
+    logoSrc: logoSrc, logoImg: logoImg, paintLogos: paintLogos, setFavicon: setFavicon
   };
 })(window);

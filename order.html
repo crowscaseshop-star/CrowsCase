@@ -3,57 +3,126 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>สั่งซื้อสินค้าออนไลน์</title>
+<title>Crow's Case — Premium Card Protection</title>
+<meta name="description" content="Crow's Case — เคสและอุปกรณ์ปกป้องการ์ดสะสมระดับพรีเมียม สั่งซื้อออนไลน์ ทางร้านติดต่อกลับภายใน 24 ชั่วโมง">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>👑</text></svg>">
+<link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
 </head>
 <body>
 
+<!-- ============ แถบเมนู ============ -->
 <nav class="shop-nav">
-  <span class="brand-logo" data-shoplogo style="width:36px;height:36px;font-size:17px">♛</span>
+  <span class="brand-logo" data-logo></span>
   <div>
     <div class="brand-name" data-shopname>Crow's Case</div>
-    <div class="brand-sub" data-tagline>PREMIUM COLLECTION</div>
+    <div class="brand-sub" data-tagline>PREMIUM CARD PROTECTION</div>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <span class="nav-link active" data-go="home">หน้าแรก</span>
+    <span class="nav-link" data-go="shop">เลือกซื้อ</span>
+    <span class="nav-link" data-go="about">เกี่ยวกับ</span>
+    <span class="nav-link" data-go="contact">ติดต่อ</span>
   </div>
   <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
     <span class="badge b-gold" id="navPhone"></span>
-    <a class="btn btn-sm btn-ghost" href="index.html">เข้าสู่ระบบร้าน</a>
+    <a class="btn btn-sm btn-ghost no-print" href="index.html">เข้าสู่ระบบร้าน</a>
   </div>
 </nav>
 
-<header class="hero">
-  <h1 class="gold-text" id="heroTitle">ความหรูหรา ที่คัดสรรมาเพื่อคุณ</h1>
-  <p id="heroText"></p>
-  <div class="hero-line"></div>
-</header>
-
 <div class="shop-wrap">
-  <div class="toolbar">
-    <input class="input grow" id="q" placeholder="ค้นหาสินค้า…">
-    <div class="chip-row" id="cats"></div>
-  </div>
-  <div class="prod-grid" id="grid" style="grid-template-columns:repeat(auto-fill,minmax(190px,1fr))"></div>
 
-  <div class="card gold-edge mt16" style="margin-top:44px">
-    <div class="card-head"><h3>ขั้นตอนการสั่งซื้อ</h3></div>
-    <div class="grid g-3">
-      <div><div style="font-size:26px;color:var(--gold)">①</div><b>เลือกสินค้า</b>
-        <div style="font-size:12.5px;color:var(--muted);line-height:1.7">กดปุ่ม “เลือกซื้อ” ที่สินค้าที่สนใจ เลือกได้หลายรายการ</div></div>
-      <div><div style="font-size:26px;color:var(--gold)">②</div><b>ฝากชื่อและเบอร์โทร</b>
-        <div style="font-size:12.5px;color:var(--muted);line-height:1.7">กรอกชื่อ เบอร์ติดต่อกลับ และรายละเอียดเพิ่มเติมที่ต้องการ</div></div>
-      <div><div style="font-size:26px;color:var(--gold)">③</div><b>ทางร้านติดต่อกลับ</b>
-        <div style="font-size:12.5px;color:var(--muted);line-height:1.7">ทีมงานจะโทรยืนยันรายการและแจ้งวิธีชำระเงินภายใน 24 ชม.</div></div>
+  <!-- ============ 1. หน้าแรก ============ -->
+  <section class="section" id="home" style="border-top:none;padding-top:0">
+    <div class="hero-split">
+      <div>
+        <div class="hero-badge" id="heroBadge">สินค้าแนะนำ</div>
+        <h1 class="gold-text" id="heroTitle"></h1>
+        <p class="lead" id="heroText"></p>
+        <div class="hero-price" id="heroPrice"></div>
+        <div class="hero-actions">
+          <button class="btn btn-gold" id="heroBuy">สั่งซื้อสินค้านี้</button>
+          <button class="btn btn-ghost" data-go="shop">ดูสินค้าทั้งหมด →</button>
+        </div>
+      </div>
+      <div class="feature-frame" id="heroImage"></div>
     </div>
-  </div>
 
-  <div style="text-align:center;margin-top:48px;color:var(--muted-2);font-size:12.5px">
-    <div id="footInfo"></div>
-    <div style="margin-top:6px" id="footNote"></div>
-  </div>
+    <div class="trust">
+      <div class="trust-item"><div class="ic">◆</div><b>คัดวัสดุเกรดพรีเมียม</b>
+        <span>อะคริลิกใสพิเศษ กันรอยและตัดแสง UV รักษาสีงานพิมพ์ให้คมชัดในระยะยาว</span></div>
+      <div class="trust-item"><div class="ic">✦</div><b>ตรวจทุกชิ้นก่อนส่ง</b>
+        <span>ขอบเรียบสนิท ไม่บาดมือ ไม่บาดการ์ด ทุกชิ้นผ่านการตรวจด้วยมือ</span></div>
+      <div class="trust-item"><div class="ic">☗</div><b>ยืนยันก่อนชำระเงินเสมอ</b>
+        <span>สั่งผ่านเว็บได้เลย ทางร้านโทรกลับยืนยันรายการก่อนทุกครั้ง ไม่ต้องโอนก่อน</span></div>
+    </div>
+  </section>
+
+  <!-- ============ 2. เลือกซื้อ ============ -->
+  <section class="section" id="shop">
+    <div class="sec-head">
+      <div class="sec-kicker">Shop</div>
+      <h2>เลือกซื้อสินค้า</h2>
+      <p>เคสและอุปกรณ์ปกป้องการ์ดสะสมที่ทางร้านคัดมาแล้ว พร้อมราคาชัดเจนทุกชิ้น</p>
+      <div class="sec-line"></div>
+    </div>
+    <div class="toolbar">
+      <input class="input grow" id="q" placeholder="ค้นหาสินค้า…">
+      <div class="chip-row" id="cats"></div>
+    </div>
+    <div class="prod-grid" id="grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))"></div>
+
+    <div class="card gold-edge" style="margin-top:40px">
+      <div class="card-head"><h3>ขั้นตอนการสั่งซื้อ</h3></div>
+      <div class="grid g-3">
+        <div><div style="font-size:26px;color:var(--gold)">①</div><b>เลือกสินค้า</b>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.8">กดปุ่ม “เลือกซื้อ” ที่สินค้าที่สนใจ เลือกได้หลายรายการ</div></div>
+        <div><div style="font-size:26px;color:var(--gold)">②</div><b>ฝากชื่อและเบอร์โทร</b>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.8">กรอกชื่อ เบอร์ติดต่อกลับ และรายละเอียดเพิ่มเติมที่ต้องการ</div></div>
+        <div><div style="font-size:26px;color:var(--gold)">③</div><b>ทางร้านติดต่อกลับ</b>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.8">ทีมงานจะโทรยืนยันรายการและแจ้งวิธีชำระเงินภายใน 24 ชม.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. เกี่ยวกับ ============ -->
+  <section class="section" id="about">
+    <div class="sec-head">
+      <div class="sec-kicker">About Us</div>
+      <h2 id="aboutTitle">ก่อนจะมาเป็น Crow’s Case</h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-logo"><span data-logo="about-logo-img" style="display:block;width:100%"></span></div>
+      <div class="about-text">
+        <div class="about-est" id="aboutEst"></div>
+        <div id="aboutBody"></div>
+      </div>
+    </div>
+    <div class="grid g-3" id="aboutPoints"></div>
+  </section>
+
+  <!-- ============ 4. ติดต่อ ============ -->
+  <section class="section" id="contact">
+    <div class="sec-head">
+      <div class="sec-kicker">Contact</div>
+      <h2>ติดต่อเรา</h2>
+      <p>สอบถามสินค้า เช็กสต๊อก หรือขอคำแนะนำในการเลือกเคส ทักมาได้ทุกช่องทาง ยินดีตอบทุกคำถาม</p>
+      <div class="sec-line"></div>
+    </div>
+    <div class="contact-grid" id="contactCards"></div>
+    <div class="info-row" id="contactInfo"></div>
+  </section>
 </div>
+
+<footer class="site-foot">
+  <div class="logo-mini" data-logo></div>
+  <div><b data-shopname style="color:var(--gold-lt)">Crow's Case</b> — <span data-tagline></span></div>
+  <div id="footInfo" style="margin-top:6px"></div>
+  <div id="footNote" style="margin-top:4px"></div>
+</footer>
 
 <button class="float-cart" id="fab" style="display:none">🛍 ตะกร้า <span class="n" id="fabN">0</span></button>
 
@@ -72,33 +141,62 @@
   var S = DB.state.settings;
   function cur() { return S.currency || '฿'; }
 
-  /* --- ใส่ข้อมูลร้าน --- */
-  document.title = 'สั่งซื้อออนไลน์ • ' + S.shopName;
-  $$('[data-shopname]').forEach(function (e) { e.textContent = S.shopName; });
-  $$('[data-shoplogo]').forEach(function (e) { e.textContent = S.logo; });
-  $$('[data-tagline]').forEach(function (e) { e.textContent = S.tagline; });
-  $('#heroTitle').textContent = S.heroTitle;
-  $('#heroText').textContent = S.heroText;
-  $('#navPhone').textContent = '📞 ' + S.phone;
-  $('#footInfo').textContent = S.shopName + ' • ' + S.address + ' • โทร ' + S.phone + ' • LINE ' + S.line;
-  $('#footNote').textContent = S.openHours + ' — ' + S.orderFooter;
-  if (S.accent) {
-    var lighten = function (hex, amt) {
-      var n = parseInt(hex.slice(1), 16);
-      var r = Math.min(255, Math.max(0, (n >> 16) + amt));
-      var g = Math.min(255, Math.max(0, ((n >> 8) & 255) + amt));
-      var b = Math.min(255, Math.max(0, (n & 255) + amt));
-      return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
-    };
-    var rs = document.documentElement.style;
-    rs.setProperty('--gold', S.accent);
-    rs.setProperty('--gold-lt', lighten(S.accent, 35));
-    rs.setProperty('--gold-dk', lighten(S.accent, -30));
-    rs.setProperty('--grad-gold',
-      'linear-gradient(135deg,' + lighten(S.accent, 40) + ' 0%,' + S.accent + ' 45%,' + lighten(S.accent, -25) + ' 100%)');
+  /* ================= ข้อมูลร้าน & ธีม ================= */
+  function paintBrand() {
+    S = DB.state.settings;
+    document.title = S.shopName + ' — ' + S.tagline;
+    $$('[data-shopname]').forEach(function (e) { e.textContent = S.shopName; });
+    $$('[data-tagline]').forEach(function (e) { e.textContent = S.tagline; });
+    UI.paintLogos();
+    $('#navPhone').textContent = '📞 ' + S.phone;
+    $('#footInfo').textContent = S.address + ' • โทร ' + S.phone + (S.line ? ' • LINE ' + S.line : '');
+    $('#footNote').textContent = S.openHours + ' — ' + S.orderFooter;
+    if (S.accent) {
+      var lighten = function (hex, amt) {
+        var n = parseInt(hex.slice(1), 16);
+        var r = Math.min(255, Math.max(0, (n >> 16) + amt));
+        var g = Math.min(255, Math.max(0, ((n >> 8) & 255) + amt));
+        var b = Math.min(255, Math.max(0, (n & 255) + amt));
+        return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+      };
+      var rs = document.documentElement.style;
+      rs.setProperty('--gold', S.accent);
+      rs.setProperty('--gold-lt', lighten(S.accent, 35));
+      rs.setProperty('--gold-dk', lighten(S.accent, -30));
+      rs.setProperty('--grad-gold', 'linear-gradient(135deg,' + lighten(S.accent, 40) + ' 0%,' + S.accent + ' 45%,' + lighten(S.accent, -25) + ' 100%)');
+    }
   }
 
-  /* --- หมวดหมู่ --- */
+  /* ================= 1. หน้าแรก ================= */
+  function paintHome() {
+    var p = DB.featured();
+    $('#heroBadge').textContent = S.heroBadge || 'สินค้าแนะนำ';
+    $('#heroTitle').textContent = S.heroTitle;
+    $('#heroText').textContent = S.heroText;
+    $('#heroBuy').textContent = S.heroCta || 'สั่งซื้อสินค้านี้';
+
+    if (!p) {
+      $('#heroPrice').innerHTML = '';
+      $('#heroImage').innerHTML = '<span class="ico">📦</span>';
+      $('#heroBuy').style.display = 'none';
+      return;
+    }
+    $('#heroPrice').innerHTML =
+      '<span class="now">' + cur() + money(p.price) + '</span>' +
+      '<span class="nm">' + esc(p.name) + '</span>' +
+      (p.qty > 0 ? '<span class="badge b-ok">พร้อมส่ง</span>' : '<span class="badge b-danger">สินค้าหมดชั่วคราว</span>');
+    $('#heroImage').innerHTML =
+      (p.imageType === 'url' && p.image
+        ? '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '">'
+        : '<span class="ico">' + esc(p.image || '📦') + '</span>') +
+      '<div class="feature-tag"><b style="color:var(--gold-lt)">' + esc(p.category) + '</b>' +
+      '<span style="color:var(--muted-2)"> • รหัส ' + esc(p.sku) + '</span></div>';
+    $('#heroBuy').style.display = '';
+    $('#heroBuy').disabled = p.qty <= 0;
+    $('#heroBuy').onclick = function () { add(p.id); openCart(); };
+  }
+
+  /* ================= 2. เลือกซื้อ ================= */
   function drawCats() {
     var cats = ['all'].concat(DB.state.categories);
     $('#cats').innerHTML = cats.map(function (c) {
@@ -109,43 +207,93 @@
       c.onclick = function () { filter.cat = c.dataset.c; drawCats(); drawGrid(); };
     });
   }
-
   function items() {
     var q = filter.q.trim().toLowerCase();
     return DB.state.products.filter(function (p) {
       if (!p.active) return false;
       if (filter.cat !== 'all' && p.category !== filter.cat) return false;
-      if (q && p.name.toLowerCase().indexOf(q) < 0) return false;
+      if (q && (p.name + ' ' + p.category).toLowerCase().indexOf(q) < 0) return false;
       return true;
     });
   }
-
   function drawGrid() {
     var list = items();
-    if (!list.length) { $('#grid').innerHTML = UI.empty('🔍', 'ไม่พบสินค้าที่ค้นหา'); return; }
+    if (!list.length) { $('#grid').innerHTML = UI.empty('🔍', 'ไม่พบสินค้าที่ค้นหา', 'ลองเปลี่ยนคำค้นหรือเลือกหมวดอื่น'); return; }
+    var feat = DB.featured();
     $('#grid').innerHTML = list.map(function (p) {
       var out = p.qty <= 0;
       var inCart = cart.find(function (c) { return c.pid === p.id; });
       return '<div class="prod" style="cursor:default">' +
-        (out ? '<span class="badge b-danger tag-out">สินค้าหมด</span>' : '') +
-        '<div class="prod-img" style="height:150px;font-size:52px">' +
+        (out ? '<span class="badge b-danger tag-out">สินค้าหมด</span>'
+             : (feat && feat.id === p.id ? '<span class="badge b-gold tag-out">แนะนำ</span>' : '')) +
+        '<div class="prod-img" style="height:160px;font-size:56px">' +
           (p.imageType === 'url' && p.image ? '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '">' : esc(p.image || '📦')) + '</div>' +
-        '<div class="prod-body" style="padding:12px">' +
+        '<div class="prod-body" style="padding:13px">' +
           '<div style="font-size:10.5px;letter-spacing:1.2px;color:var(--muted-2);text-transform:uppercase">' + esc(p.category) + '</div>' +
-          '<div class="prod-nm" style="height:auto;margin:4px 0 8px;font-size:13.5px">' + esc(p.name) + '</div>' +
-          '<div class="prod-price" style="font-size:17px;margin-bottom:10px">' + cur() + money(p.price) + '</div>' +
+          '<div class="prod-nm" style="height:auto;margin:5px 0 9px;font-size:13.5px">' + esc(p.name) + '</div>' +
+          '<div class="prod-price" style="font-size:18px;margin-bottom:11px">' + cur() + money(p.price) + '</div>' +
           (out ? '<button class="btn btn-sm btn-block" disabled>สินค้าหมด</button>'
                : '<button class="btn btn-sm ' + (inCart ? '' : 'btn-gold') + ' btn-block" data-add="' + p.id + '">' +
                  (inCart ? '✓ เลือกแล้ว (' + inCart.qty + ')' : 'เลือกซื้อ') + '</button>') +
         '</div></div>';
     }).join('');
-    $$('[data-add]').forEach(function (b) {
-      b.onclick = function () { add(b.dataset.add); };
-    });
+    $$('[data-add]').forEach(function (b) { b.onclick = function () { add(b.dataset.add); }; });
   }
 
+  /* ================= 3. เกี่ยวกับ ================= */
+  function paintAbout() {
+    $('#aboutTitle').textContent = S.aboutTitle || 'เกี่ยวกับเรา';
+    $('#aboutEst').textContent = S.founded ? 'ก่อตั้งเมื่อปี ' + S.founded : '';
+    $('#aboutBody').innerHTML = String(S.aboutText || '').split(/\n\s*\n/).map(function (t) {
+      return '<p>' + esc(t.trim()).replace(/\n/g, '<br>') + '</p>';
+    }).join('');
+    var pts = S.aboutPoints || [];
+    $('#aboutPoints').innerHTML = pts.filter(function (p) { return p && p.t; }).map(function (p, i) {
+      return '<div class="trust-item"><div class="ic">' + ['◆', '✦', '☗'][i % 3] + '</div>' +
+        '<b>' + esc(p.t) + '</b><span>' + esc(p.d) + '</span></div>';
+    }).join('');
+  }
+
+  /* ================= 4. ติดต่อ ================= */
+  function paintContact() {
+    var cards = [];
+    if (S.line) {
+      cards.push({
+        href: S.lineUrl || ('https://line.me/R/ti/p/' + encodeURIComponent(S.line)),
+        ic: '💬', lb: 'LINE Official', vl: S.line, sb: 'ทักแชตสอบถาม / สั่งซื้อได้ทันที'
+      });
+    }
+    if (S.facebook || S.facebookUrl) {
+      cards.push({
+        href: S.facebookUrl || ('https://www.facebook.com/search/top?q=' + encodeURIComponent(S.facebook)),
+        ic: '📘', lb: 'Facebook', vl: S.facebook || 'เพจของเรา', sb: 'ดูสินค้าใหม่และรีวิวจากลูกค้า'
+      });
+    }
+    if (S.phone) {
+      cards.push({ href: 'tel:' + String(S.phone).replace(/[^0-9+]/g, ''), ic: '📞', lb: 'โทรศัพท์', vl: S.phone, sb: 'โทรคุยกับทีมงานโดยตรง' });
+    }
+    if (S.email) {
+      cards.push({ href: 'mailto:' + S.email, ic: '✉', lb: 'อีเมล', vl: S.email, sb: 'สำหรับงานขายส่ง / ธุรกิจ' });
+    }
+    $('#contactCards').innerHTML = cards.map(function (c) {
+      return '<a class="contact-card" href="' + esc(c.href) + '" target="_blank" rel="noopener">' +
+        '<div class="ic">' + c.ic + '</div><div class="lb">' + esc(c.lb) + '</div>' +
+        '<div class="vl">' + esc(c.vl) + '</div><div class="sb">' + esc(c.sb) + '</div></a>';
+    }).join('');
+
+    $('#contactInfo').innerHTML =
+      box('ที่ตั้งร้าน', esc(S.address) + (S.mapUrl ? '<br><a href="' + esc(S.mapUrl) + '" target="_blank" rel="noopener">เปิดแผนที่ →</a>' : '')) +
+      box('เวลาทำการ', esc(S.openHours)) +
+      box('การสั่งซื้อออนไลน์', 'สั่งผ่านหน้าเว็บได้ตลอด 24 ชม. ทีมงานจะติดต่อกลับเพื่อยืนยันรายการภายใน 1 วันทำการ');
+    function box(l, v) {
+      return '<div class="info-box"><div class="lb">' + esc(l) + '</div><div class="vl">' + v + '</div></div>';
+    }
+  }
+
+  /* ================= ตะกร้า ================= */
   function add(pid) {
     var p = DB.product(pid); if (!p) return;
+    if (p.qty <= 0) return UI.toast('สินค้าชิ้นนี้หมดชั่วคราว', 'warn');
     var l = cart.find(function (c) { return c.pid === pid; });
     if (l) l.qty++;
     else cart.push({ pid: p.id, name: p.name, image: p.image, imageType: p.imageType, price: p.price, qty: 1 });
@@ -158,7 +306,6 @@
     $('#fabN').textContent = n;
   }
 
-  /* --- ตะกร้า + ฟอร์มติดต่อกลับ --- */
   function openCart() {
     if (!cart.length) return;
     var total = cart.reduce(function (a, c) { return a + c.price * c.qty; }, 0);
@@ -220,18 +367,42 @@
         'ทางร้านจะติดต่อกลับที่เบอร์ <b>' + esc(o.phone) + '</b> ภายใน 24 ชั่วโมง<br>' +
         'ยอดรวมโดยประมาณ <b>' + cur() + money(o.total) + '</b></p>' +
         '<div class="tip" style="text-align:left;margin-top:18px"><span class="i">📞</span><div>หากต้องการสอบถามเร่งด่วน โทร <b>' +
-        esc(S.phone) + '</b> หรือ LINE <b>' + esc(S.line) + '</b></div></div></div>',
+        esc(S.phone) + '</b>' + (S.line ? ' หรือ LINE <b>' + esc(S.line) + '</b>' : '') + '</div></div></div>',
       footHtml: '<button class="btn btn-gold" data-close>เลือกซื้อสินค้าต่อ</button>'
     });
   }
 
+  /* ================= เมนู / เลื่อนหน้า ================= */
+  function goSection(id) {
+    var el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  $$('[data-go]').forEach(function (b) { b.onclick = function () { goSection(b.dataset.go); }; });
+
+  var sections = ['home', 'shop', 'about', 'contact'];
+  function syncNav() {
+    var pos = window.scrollY + 140, active = 'home';
+    sections.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && el.offsetTop <= pos) active = id;
+    });
+    $$('#navLinks .nav-link').forEach(function (l) { l.classList.toggle('active', l.dataset.go === active); });
+  }
+  window.addEventListener('scroll', syncNav, { passive: true });
+
+  /* ================= เริ่มทำงาน ================= */
   $('#q').oninput = function () { filter.q = this.value; drawGrid(); };
   $('#fab').onclick = openCart;
   $('#overlay').onclick = function (e) { if (e.target === this) UI.closeModal(); };
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') UI.closeModal(); });
-  window.addEventListener('storage', function (e) { if (e.key === DB.KEY) { DB.load(); drawCats(); drawGrid(); } });
+  window.addEventListener('storage', function (e) {
+    if (e.key === DB.KEY) { DB.load(); renderAll(); }   // แดชบอร์ดแก้ข้อมูล → หน้าเว็บอัปเดตตาม
+  });
 
-  drawCats(); drawGrid(); drawFab();
+  function renderAll() {
+    paintBrand(); paintHome(); drawCats(); drawGrid(); paintAbout(); paintContact(); drawFab(); syncNav();
+  }
+  renderAll();
 })();
 </script>
 </body>

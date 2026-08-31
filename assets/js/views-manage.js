@@ -613,29 +613,81 @@
      ========================================================== */
   V.settings = function (el) {
     var S = DB.state.settings;
+    var pts = S.aboutPoints || [];
     el.innerHTML =
+      /* ---------- โลโก้ & แบรนด์ ---------- */
+      '<div class="card gold-edge mb16"><div class="card-head"><h3>โลโก้ & เอกลักษณ์แบรนด์</h3>' +
+        '<div class="sp"><span class="badge b-gold">ใช้ทุกหน้า: เข้าสู่ระบบ · แดชบอร์ด · หน้าเว็บ · ใบเสร็จ · ไอคอนแท็บ</span></div></div>' +
+        '<div class="row" style="align-items:flex-start">' +
+          '<div style="flex:0 0 150px"><label style="font-size:12.5px;color:var(--muted)">ตัวอย่างโลโก้</label>' +
+            '<div id="logoPrev" class="login-logo" data-logo style="width:132px;height:132px;margin:6px 0 0">' + UI.logoImg() + '</div></div>' +
+          '<div style="flex:2">' +
+            (/^data:/.test(S.logoUrl || '')
+              ? '<div class="field"><label>โลโก้ปัจจุบัน</label><input class="input" value="ไฟล์ที่อัปโหลดไว้ในเครื่องนี้" disabled>' +
+                '<button class="btn btn-sm" id="logoReset" style="margin-top:8px">↺ กลับไปใช้ไฟล์ assets/img/logo.png</button></div>'
+              : f('ที่อยู่ไฟล์โลโก้ (path หรือ URL)', 'logoUrl', S.logoUrl)) +
+            '<div class="hint">แนะนำให้บันทึกไฟล์โลโก้ไว้ที่ <b>assets/img/logo.png</b> เพื่อให้ลูกค้าทุกคนเห็นบนเว็บที่เผยแพร่จริง</div>' +
+            '<div class="field" style="margin-top:12px"><label>หรืออัปโหลดไฟล์จากเครื่อง</label>' +
+              '<input type="file" id="logoFile" accept="image/*" style="font-size:12.5px">' +
+              '<div class="hint">ไฟล์ที่อัปโหลดจะเก็บในเบราว์เซอร์เครื่องนี้เท่านั้น (เห็นเฉพาะเครื่องนี้) — ถ้าจะให้ลูกค้าเห็นด้วย ต้องวางไฟล์จริงในโฟลเดอร์ assets/img</div></div>' +
+          '</div>' +
+          '<div style="flex:2">' +
+            f('ชื่อร้าน', 'shopName', S.shopName) +
+            f('สโลแกนใต้ชื่อ', 'tagline', S.tagline) +
+            f('สกุลเงิน', 'currency', S.currency) +
+          '</div>' +
+        '</div></div>' +
+
       '<div class="grid g-2 mb16">' +
-        '<div class="card"><div class="card-head"><h3>ข้อมูลร้าน</h3></div>' +
-          f('ชื่อร้าน', 'shopName', S.shopName) +
-          f('สโลแกน / คำโปรย', 'tagline', S.tagline) +
-          '<div class="row">' + f('โลโก้ (อีโมจิ/ตัวอักษร)', 'logo', S.logo) + f('สกุลเงิน', 'currency', S.currency) + '</div>' +
-          '<div class="row">' + f('เบอร์โทรร้าน', 'phone', S.phone) + f('LINE ID', 'line', S.line) + '</div>' +
-          f('ที่อยู่', 'address', S.address) +
-          f('เวลาทำการ', 'openHours', S.openHours) +
-        '</div>' +
-        '<div class="card"><div class="card-head"><h3>หน้าร้านออนไลน์ (order.html)</h3></div>' +
-          f('หัวข้อใหญ่บนหน้าเว็บ', 'heroTitle', S.heroTitle) +
+        /* ---------- หน้าแรก ---------- */
+        '<div class="card"><div class="card-head"><h3>🏠 หน้าแรก — สินค้าที่นำเสนอ</h3></div>' +
+          '<div class="field"><label>สินค้าเด่นที่โชว์บนหน้าแรก <span class="req">*</span></label>' +
+            '<select class="input" data-k="featuredId">' +
+            DB.state.products.filter(function (p) { return p.active; }).map(function (p) {
+              return '<option value="' + p.id + '" ' + (S.featuredId === p.id ? 'selected' : '') + '>' +
+                esc(p.name) + ' — ' + cur() + money(p.price) + '</option>';
+            }).join('') + '</select>' +
+            '<div class="hint">สินค้าที่เลือกจะขึ้นเป็นฉากใหญ่หน้าแรกพร้อมรูป ราคา และปุ่มสั่งซื้อ</div></div>' +
+          f('ป้ายกำกับเหนือหัวข้อ', 'heroBadge', S.heroBadge) +
+          f('หัวข้อใหญ่', 'heroTitle', S.heroTitle) +
           '<div class="field"><label>ข้อความอธิบายใต้หัวข้อ</label><textarea class="input" data-k="heroText" rows="3">' + esc(S.heroText) + '</textarea></div>' +
-          f('ข้อความท้ายใบเสร็จ/ท้ายเว็บ', 'orderFooter', S.orderFooter) +
-          '<div class="divider"></div>' +
-          '<div class="sec-title">ภาษี & การแสดงผล</div>' +
-          '<label class="perm mb16"><input type="checkbox" id="vatOn" ' + (S.vatEnabled ? 'checked' : '') + '>' +
-            '<div><div class="t">คิด VAT ในบิลขาย</div><div class="d">เพิ่มบรรทัดภาษีมูลค่าเพิ่มในหน้าชำระเงินและใบเสร็จ</div></div></label>' +
-          f('อัตรา VAT (%)', 'vatRate', S.vatRate, 'number') +
-          '<label class="perm"><input type="checkbox" id="lowOn" ' + (S.lowStockAlert ? 'checked' : '') + '>' +
-            '<div><div class="t">แจ้งเตือนสินค้าใกล้หมด</div><div class="d">แสดงตัวเลขเตือนบนเมนูสต๊อกและหน้าภาพรวม</div></div></label>' +
+          f('ข้อความบนปุ่ม', 'heroCta', S.heroCta) +
+        '</div>' +
+
+        /* ---------- ติดต่อ ---------- */
+        '<div class="card"><div class="card-head"><h3>📞 ติดต่อ — ช่องทางติดต่อร้าน</h3></div>' +
+          f('เบอร์โทรศัพท์', 'phone', S.phone) +
+          '<div class="row">' + f('LINE ID', 'line', S.line) + f('ลิงก์ LINE (line.me/…)', 'lineUrl', S.lineUrl) + '</div>' +
+          '<div class="row">' + f('ชื่อเพจ Facebook', 'facebook', S.facebook) + f('ลิงก์ Facebook', 'facebookUrl', S.facebookUrl) + '</div>' +
+          f('อีเมล (ถ้ามี)', 'email', S.email) +
+          f('ที่อยู่ร้าน', 'address', S.address) +
+          '<div class="row">' + f('เวลาทำการ', 'openHours', S.openHours) + f('ลิงก์แผนที่ (Google Maps)', 'mapUrl', S.mapUrl) + '</div>' +
         '</div>' +
       '</div>' +
+
+      /* ---------- เกี่ยวกับ ---------- */
+      '<div class="card mb16"><div class="card-head"><h3>📖 เกี่ยวกับ — เรื่องราวก่อนจะมาเป็น Crow’s Case</h3></div>' +
+        '<div class="row">' + f('หัวข้อหน้าเกี่ยวกับ', 'aboutTitle', S.aboutTitle) + f('ก่อตั้งปี', 'founded', S.founded) + '</div>' +
+        '<div class="field"><label>เนื้อหา (เว้นบรรทัดว่างเพื่อขึ้นย่อหน้าใหม่)</label>' +
+          '<textarea class="input" data-k="aboutText" rows="7">' + esc(S.aboutText) + '</textarea></div>' +
+        '<div class="sec-title">จุดเด่น 3 ข้อ (แสดงเป็นการ์ดใต้เนื้อหา)</div>' +
+        '<div class="grid g-3">' + [0, 1, 2].map(function (i) {
+          var p = pts[i] || { t: '', d: '' };
+          return '<div style="background:var(--panel-2);border:1px solid var(--line-soft);border-radius:10px;padding:12px">' +
+            '<div class="field"><label>หัวข้อที่ ' + (i + 1) + '</label><input class="input" data-ap="' + i + '|t" value="' + esc(p.t) + '"></div>' +
+            '<div class="field" style="margin:0"><label>คำอธิบาย</label><textarea class="input" data-ap="' + i + '|d" rows="3">' + esc(p.d) + '</textarea></div></div>';
+        }).join('') + '</div></div>' +
+
+      /* ---------- ภาษี ---------- */
+      '<div class="card mb16"><div class="card-head"><h3>ภาษี & การแสดงผล</h3></div>' +
+        '<div class="grid g-3">' +
+          '<div><label class="perm"><input type="checkbox" id="vatOn" ' + (S.vatEnabled ? 'checked' : '') + '>' +
+            '<div><div class="t">คิด VAT ในบิลขาย</div><div class="d">เพิ่มบรรทัดภาษีในหน้าชำระเงินและใบเสร็จ</div></div></label>' +
+            '<div style="margin-top:10px">' + f('อัตรา VAT (%)', 'vatRate', S.vatRate, 'number') + '</div></div>' +
+          '<div><label class="perm"><input type="checkbox" id="lowOn" ' + (S.lowStockAlert ? 'checked' : '') + '>' +
+            '<div><div class="t">แจ้งเตือนสินค้าใกล้หมด</div><div class="d">แสดงตัวเลขเตือนบนเมนูสต๊อกและหน้าภาพรวม</div></div></label></div>' +
+          '<div>' + f('ข้อความท้ายใบเสร็จ / ท้ายเว็บ', 'orderFooter', S.orderFooter) + '</div>' +
+        '</div></div>' +
 
       '<div class="card mb16"><div class="card-head"><h3>โทนสีเว็บไซต์</h3><div class="sp"><span class="badge b-gold">ธีมพรีเมียม ดำ-ทอง</span></div></div>' +
         '<div class="chip-row" id="accents">' +
@@ -677,6 +729,34 @@
         UI.toast('บันทึกแล้ว', 'ok', 1200); App.applySettings();
       };
     });
+    /* จุดเด่น 3 ข้อในหน้าเกี่ยวกับ */
+    $$('[data-ap]', el).forEach(function (i) {
+      i.onchange = function () {
+        var parts = i.dataset.ap.split('|'), idx = +parts[0], key = parts[1];
+        if (!Array.isArray(S.aboutPoints)) S.aboutPoints = [];
+        while (S.aboutPoints.length <= idx) S.aboutPoints.push({ t: '', d: '' });
+        S.aboutPoints[idx][key] = i.value;
+        DB.save(); UI.toast('บันทึกแล้ว', 'ok', 1200);
+      };
+    });
+    /* อัปโหลดโลโก้ */
+    $('#logoFile').onchange = function () {
+      var file = this.files[0]; if (!file) return;
+      if (file.size > 1.5 * 1024 * 1024) return UI.toast('ไฟล์ใหญ่เกิน 1.5 MB — ย่อรูปก่อนอัปโหลด', 'err');
+      var rd = new FileReader();
+      rd.onload = function (e) {
+        S.logoUrl = e.target.result; DB.save();
+        DB.logAct('เปลี่ยนโลโก้ร้าน', file.name);
+        App.applySettings(); App.render();
+        UI.toast('เปลี่ยนโลโก้เรียบร้อย', 'ok');
+      };
+      rd.readAsDataURL(file);
+    };
+    if ($('#logoReset')) $('#logoReset').onclick = function () {
+      S.logoUrl = 'assets/img/logo.png'; DB.save();
+      App.applySettings(); App.render();
+      UI.toast('กลับไปใช้ไฟล์โลโก้ในโฟลเดอร์แล้ว', 'ok');
+    };
     $('#vatOn').onchange = function () { S.vatEnabled = this.checked; DB.save(); UI.toast('บันทึกแล้ว', 'ok', 1200); };
     $('#lowOn').onchange = function () { S.lowStockAlert = this.checked; DB.save(); App.refreshBadges(); };
     $$('#accents .chip').forEach(function (c) {
