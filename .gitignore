@@ -1,0 +1,9 @@
+# ไฟล์สำรองข้อมูลที่ดาวน์โหลดจากระบบ
+crowscase-backup-*.json
+
+# ระบบปฏิบัติการ / เอดิเตอร์
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

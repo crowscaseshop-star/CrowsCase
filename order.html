@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>สั่งซื้อสินค้าออนไลน์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>👑</text></svg>">
+</head>
+<body>
+
+<nav class="shop-nav">
+  <span class="brand-logo" data-shoplogo style="width:36px;height:36px;font-size:17px">♛</span>
+  <div>
+    <div class="brand-name" data-shopname>Crow's Case</div>
+    <div class="brand-sub" data-tagline>PREMIUM COLLECTION</div>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+    <span class="badge b-gold" id="navPhone"></span>
+    <a class="btn btn-sm btn-ghost" href="index.html">เข้าสู่ระบบร้าน</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <h1 class="gold-text" id="heroTitle">ความหรูหรา ที่คัดสรรมาเพื่อคุณ</h1>
+  <p id="heroText"></p>
+  <div class="hero-line"></div>
+</header>
+
+<div class="shop-wrap">
+  <div class="toolbar">
+    <input class="input grow" id="q" placeholder="ค้นหาสินค้า…">
+    <div class="chip-row" id="cats"></div>
+  </div>
+  <div class="prod-grid" id="grid" style="grid-template-columns:repeat(auto-fill,minmax(190px,1fr))"></div>
+
+  <div class="card gold-edge mt16" style="margin-top:44px">
+    <div class="card-head"><h3>ขั้นตอนการสั่งซื้อ</h3></div>
+    <div class="grid g-3">
+      <div><div style="font-size:26px;color:var(--gold)">①</div><b>เลือกสินค้า</b>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.7">กดปุ่ม “เลือกซื้อ” ที่สินค้าที่สนใจ เลือกได้หลายรายการ</div></div>
+      <div><div style="font-size:26px;color:var(--gold)">②</div><b>ฝากชื่อและเบอร์โทร</b>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.7">กรอกชื่อ เบอร์ติดต่อกลับ และรายละเอียดเพิ่มเติมที่ต้องการ</div></div>
+      <div><div style="font-size:26px;color:var(--gold)">③</div><b>ทางร้านติดต่อกลับ</b>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.7">ทีมงานจะโทรยืนยันรายการและแจ้งวิธีชำระเงินภายใน 24 ชม.</div></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:48px;color:var(--muted-2);font-size:12.5px">
+    <div id="footInfo"></div>
+    <div style="margin-top:6px" id="footNote"></div>
+  </div>
+</div>
+
+<button class="float-cart" id="fab" style="display:none">🛍 ตะกร้า <span class="n" id="fabN">0</span></button>
+
+<div class="overlay" id="overlay"></div>
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/store.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = UI.$, $$ = UI.$$, esc = DB.esc, money = DB.money;
+  var cart = [], filter = { cat: 'all', q: '' };
+
+  DB.load();
+  var S = DB.state.settings;
+  function cur() { return S.currency || '฿'; }
+
+  /* --- ใส่ข้อมูลร้าน --- */
+  document.title = 'สั่งซื้อออนไลน์ • ' + S.shopName;
+  $$('[data-shopname]').forEach(function (e) { e.textContent = S.shopName; });
+  $$('[data-shoplogo]').forEach(function (e) { e.textContent = S.logo; });
+  $$('[data-tagline]').forEach(function (e) { e.textContent = S.tagline; });
+  $('#heroTitle').textContent = S.heroTitle;
+  $('#heroText').textContent = S.heroText;
+  $('#navPhone').textContent = '📞 ' + S.phone;
+  $('#footInfo').textContent = S.shopName + ' • ' + S.address + ' • โทร ' + S.phone + ' • LINE ' + S.line;
+  $('#footNote').textContent = S.openHours + ' — ' + S.orderFooter;
+  if (S.accent) {
+    var lighten = function (hex, amt) {
+      var n = parseInt(hex.slice(1), 16);
+      var r = Math.min(255, Math.max(0, (n >> 16) + amt));
+      var g = Math.min(255, Math.max(0, ((n >> 8) & 255) + amt));
+      var b = Math.min(255, Math.max(0, (n & 255) + amt));
+      return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+    };
+    var rs = document.documentElement.style;
+    rs.setProperty('--gold', S.accent);
+    rs.setProperty('--gold-lt', lighten(S.accent, 35));
+    rs.setProperty('--gold-dk', lighten(S.accent, -30));
+    rs.setProperty('--grad-gold',
+      'linear-gradient(135deg,' + lighten(S.accent, 40) + ' 0%,' + S.accent + ' 45%,' + lighten(S.accent, -25) + ' 100%)');
+  }
+
+  /* --- หมวดหมู่ --- */
+  function drawCats() {
+    var cats = ['all'].concat(DB.state.categories);
+    $('#cats').innerHTML = cats.map(function (c) {
+      return '<span class="chip ' + (filter.cat === c ? 'active' : '') + '" data-c="' + esc(c) + '">' +
+        (c === 'all' ? 'ทั้งหมด' : esc(c)) + '</span>';
+    }).join('');
+    $$('#cats .chip').forEach(function (c) {
+      c.onclick = function () { filter.cat = c.dataset.c; drawCats(); drawGrid(); };
+    });
+  }
+
+  function items() {
+    var q = filter.q.trim().toLowerCase();
+    return DB.state.products.filter(function (p) {
+      if (!p.active) return false;
+      if (filter.cat !== 'all' && p.category !== filter.cat) return false;
+      if (q && p.name.toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+  }
+
+  function drawGrid() {
+    var list = items();
+    if (!list.length) { $('#grid').innerHTML = UI.empty('🔍', 'ไม่พบสินค้าที่ค้นหา'); return; }
+    $('#grid').innerHTML = list.map(function (p) {
+      var out = p.qty <= 0;
+      var inCart = cart.find(function (c) { return c.pid === p.id; });
+      return '<div class="prod" style="cursor:default">' +
+        (out ? '<span class="badge b-danger tag-out">สินค้าหมด</span>' : '') +
+        '<div class="prod-img" style="height:150px;font-size:52px">' +
+          (p.imageType === 'url' && p.image ? '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '">' : esc(p.image || '📦')) + '</div>' +
+        '<div class="prod-body" style="padding:12px">' +
+          '<div style="font-size:10.5px;letter-spacing:1.2px;color:var(--muted-2);text-transform:uppercase">' + esc(p.category) + '</div>' +
+          '<div class="prod-nm" style="height:auto;margin:4px 0 8px;font-size:13.5px">' + esc(p.name) + '</div>' +
+          '<div class="prod-price" style="font-size:17px;margin-bottom:10px">' + cur() + money(p.price) + '</div>' +
+          (out ? '<button class="btn btn-sm btn-block" disabled>สินค้าหมด</button>'
+               : '<button class="btn btn-sm ' + (inCart ? '' : 'btn-gold') + ' btn-block" data-add="' + p.id + '">' +
+                 (inCart ? '✓ เลือกแล้ว (' + inCart.qty + ')' : 'เลือกซื้อ') + '</button>') +
+        '</div></div>';
+    }).join('');
+    $$('[data-add]').forEach(function (b) {
+      b.onclick = function () { add(b.dataset.add); };
+    });
+  }
+
+  function add(pid) {
+    var p = DB.product(pid); if (!p) return;
+    var l = cart.find(function (c) { return c.pid === pid; });
+    if (l) l.qty++;
+    else cart.push({ pid: p.id, name: p.name, image: p.image, imageType: p.imageType, price: p.price, qty: 1 });
+    UI.toast('เพิ่ม ' + p.name + ' แล้ว', 'ok', 1500);
+    drawGrid(); drawFab();
+  }
+  function drawFab() {
+    var n = cart.reduce(function (a, c) { return a + c.qty; }, 0);
+    $('#fab').style.display = n ? 'flex' : 'none';
+    $('#fabN').textContent = n;
+  }
+
+  /* --- ตะกร้า + ฟอร์มติดต่อกลับ --- */
+  function openCart() {
+    if (!cart.length) return;
+    var total = cart.reduce(function (a, c) { return a + c.price * c.qty; }, 0);
+    UI.modal({
+      title: 'รายการที่เลือก & ข้อมูลติดต่อกลับ', wide: true,
+      body:
+        '<div class="sec-title">สินค้าที่คุณเลือก</div>' +
+        '<div id="cartBox">' + cart.map(function (c, i) {
+          return '<div class="ci">' + UI.imgHtml(c, 'ci-ico') +
+            '<div style="flex:1;min-width:0"><div class="ci-nm">' + esc(c.name) + '</div>' +
+            '<div class="ci-pr">' + cur() + money(c.price) + ' × ' + c.qty + '</div></div>' +
+            '<div class="qty-ctl"><button class="qbtn" data-m="-" data-i="' + i + '">−</button>' +
+            '<span class="qn">' + c.qty + '</span>' +
+            '<button class="qbtn" data-m="+" data-i="' + i + '">+</button>' +
+            '<button class="qbtn" data-m="x" data-i="' + i + '" style="color:#e0574f">×</button></div></div>';
+        }).join('') + '</div>' +
+        '<div class="sumline total" style="margin-bottom:20px"><span>ยอดรวมโดยประมาณ</span><b>' + cur() + money(total) + '</b></div>' +
+        '<div class="sec-title">ข้อมูลสำหรับติดต่อกลับ</div>' +
+        '<div class="row">' +
+          '<div class="field"><label>ชื่อผู้สั่งซื้อ <span class="req">*</span></label><input class="input" id="cName" placeholder="ชื่อ-นามสกุล"></div>' +
+          '<div class="field"><label>เบอร์โทรติดต่อกลับ <span class="req">*</span></label><input class="input" id="cPhone" type="tel" placeholder="08X-XXX-XXXX"></div>' +
+        '</div>' +
+        '<div class="field"><label>รายละเอียดเพิ่มเติม</label>' +
+          '<textarea class="input" id="cNote" rows="3" placeholder="เช่น ช่วงเวลาที่สะดวกให้ติดต่อกลับ / ต้องการดูสินค้าจริงก่อน"></textarea></div>' +
+        '<div class="tip"><span class="i">🔒</span><div>ข้อมูลของคุณใช้สำหรับติดต่อยืนยันคำสั่งซื้อเท่านั้น ทางร้านจะโทรกลับภายใน 24 ชั่วโมง ' +
+          '<b>ยังไม่มีการเรียกเก็บเงินในขั้นตอนนี้</b></div></div>',
+      okText: 'ส่งคำสั่งซื้อ ให้ร้านติดต่อกลับ',
+      onRender: function (ov) {
+        $$('.qbtn', ov).forEach(function (b) {
+          b.onclick = function () {
+            var i = +b.dataset.i;
+            if (b.dataset.m === '+') cart[i].qty++;
+            else if (b.dataset.m === '-') { cart[i].qty--; if (cart[i].qty <= 0) cart.splice(i, 1); }
+            else cart.splice(i, 1);
+            UI.closeModal(); drawGrid(); drawFab();
+            if (cart.length) openCart();
+          };
+        });
+      },
+      onOk: function (ov) {
+        var n = $('#cName', ov).value.trim(), p = $('#cPhone', ov).value.trim();
+        if (!n) { UI.toast('กรุณากรอกชื่อผู้สั่งซื้อ', 'err'); return false; }
+        if (!/^[0-9+\-\s()]{8,20}$/.test(p)) { UI.toast('กรุณากรอกเบอร์โทรให้ถูกต้อง', 'err'); return false; }
+        var o = DB.placeOrder({ name: n, phone: p, note: $('#cNote', ov).value.trim(), items: cart.slice() });
+        cart = []; drawGrid(); drawFab(); UI.closeModal();
+        thanks(o);
+        return false;
+      }
+    });
+  }
+
+  function thanks(o) {
+    UI.modal({
+      title: 'ได้รับคำสั่งซื้อของคุณแล้ว',
+      body: '<div style="text-align:center;padding:8px 0 4px">' +
+        '<div style="font-size:52px">✅</div>' +
+        '<h3 style="margin:10px 0 6px">ขอบคุณ คุณ' + esc(o.name) + '</h3>' +
+        '<p style="color:var(--muted);line-height:1.8">หมายเลขคำสั่งซื้อของคุณคือ <b class="gold-text">' + esc(o.code) + '</b><br>' +
+        'ทางร้านจะติดต่อกลับที่เบอร์ <b>' + esc(o.phone) + '</b> ภายใน 24 ชั่วโมง<br>' +
+        'ยอดรวมโดยประมาณ <b>' + cur() + money(o.total) + '</b></p>' +
+        '<div class="tip" style="text-align:left;margin-top:18px"><span class="i">📞</span><div>หากต้องการสอบถามเร่งด่วน โทร <b>' +
+        esc(S.phone) + '</b> หรือ LINE <b>' + esc(S.line) + '</b></div></div></div>',
+      footHtml: '<button class="btn btn-gold" data-close>เลือกซื้อสินค้าต่อ</button>'
+    });
+  }
+
+  $('#q').oninput = function () { filter.q = this.value; drawGrid(); };
+  $('#fab').onclick = openCart;
+  $('#overlay').onclick = function (e) { if (e.target === this) UI.closeModal(); };
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') UI.closeModal(); });
+  window.addEventListener('storage', function (e) { if (e.key === DB.KEY) { DB.load(); drawCats(); drawGrid(); } });
+
+  drawCats(); drawGrid(); drawFab();
+})();
+</script>
+</body>
+</html>
