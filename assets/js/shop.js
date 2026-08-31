@@ -166,7 +166,7 @@
       return '<div class="prod" style="cursor:default">' +
         (out ? '<span class="badge b-danger tag-out">' + esc(T('tagSoldOut')) + '</span>'
              : (feat && feat.id === p.id ? '<span class="badge b-gold tag-out">' + esc(T('tagRecommend')) + '</span>' : '')) +
-        '<div class="prod-img" style="height:160px;font-size:56px;position:relative" data-preview="' + p.id + '">' +
+        '<div class="prod-img" style="aspect-ratio:3/4;height:auto;font-size:56px;position:relative" data-preview="' + p.id + '">' +
           (p.imageType === 'url' && p.image ? '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '">' : esc(p.image || '📦')) +
           (mc ? '<span class="media-pill">' + (mi ? '🖼 ' + mi : '') + (mi && mv ? '  ' : '') + (mv ? '🎬 ' + mv : '') + '</span>' : '') +
           '<span class="peek">🔍 ' + esc(T('previewBtn')) + '</span></div>' +
