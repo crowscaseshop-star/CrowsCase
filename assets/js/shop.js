@@ -237,19 +237,65 @@
     if (!list.length && p.imageType === 'url' && p.image) list = [{ type: 'image', url: p.image }];
     return list;
   }
+  function ratioStyle(it) {
+    return (it && it.w && it.h) ? ' style="aspect-ratio:' + it.w + '/' + it.h + '"' : '';
+  }
   function stageHtml(it, p) {
     if (!it) return '<span class="emoji">' + esc(p.image || '📦') + '</span>';
     if (it.type === 'youtube') {
       return '<iframe src="https://www.youtube-nocookie.com/embed/' + esc(it.id || '') +
         '?rel=0" title="' + esc(p.name) + '" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>';
     }
-    if (it.type === 'video') return '<video src="' + esc(it.url) + '" controls playsinline preload="metadata"></video>';
-    return '<img src="' + esc(it.url) + '" alt="' + esc(p.name) + '">';
+    if (it.type === 'video') {
+      /* preload=none: ยังไม่โหลดไฟล์จนกว่าลูกค้าจะกดเล่น หน้าต่างจึงเปิดได้ทันที */
+      return '<video src="' + esc(it.url) + '" controls playsinline preload="none"' + ratioStyle(it) + '></video>' +
+        '<div class="pv-loading play" data-load><div><div class="disc">▶</div>' +
+        '<div style="margin-top:9px">' + esc(T('pvPlay')) + '</div></div></div>';
+    }
+    return '<img src="' + esc(it.url) + '" alt="' + esc(p.name) + '"' + ratioStyle(it) + '>';
   }
   function thumbHtml(it) {
     if (it.type === 'youtube') return '<img src="https://img.youtube.com/vi/' + esc(it.id || '') + '/mqdefault.jpg" alt=""><span class="p">▶</span>';
-    if (it.type === 'video') return '<video src="' + esc(it.url) + '#t=0.5" muted playsinline preload="metadata"></video><span class="p">▶</span>';
+    if (it.type === 'video') return '<span class="vt">🎬</span><span class="p">▶</span>';
     return '<img src="' + esc(it.url) + '" alt="">';
+  }
+
+  /* วิดีโอไฟล์ใหญ่ต้องใช้เวลาโหลด — แสดงสถานะให้ชัดว่ากำลังโหลด ไม่ใช่ค้าง
+     ถ้าโหลดไม่ขึ้นจริง ๆ ให้ทางเลือกเปิดในแท็บใหม่แทน */
+  function wireVideo(stage, it) {
+    var v = stage.querySelector('video');
+    if (!v || !it) return;
+    var box = stage.querySelector('[data-load]');
+    var slowTimer = null;
+    function done() {
+      clearTimeout(slowTimer);
+      if (box && box.parentNode) box.parentNode.removeChild(box);
+    }
+    function fail(msg) {
+      clearTimeout(slowTimer);
+      if (!box) return;
+      box.className = 'pv-loading err';
+      box.innerHTML = '<div>' + esc(msg) + '<br><a href="' + esc(it.url) + '" target="_blank" rel="noopener">' +
+        esc(T('pvOpenNew')) + '</a></div>';
+    }
+    v.addEventListener('loadedmetadata', function () {
+      if (v.videoWidth && v.videoHeight) v.style.aspectRatio = v.videoWidth + '/' + v.videoHeight;
+    });
+    v.addEventListener('canplay', done);
+    v.addEventListener('playing', done);
+    v.addEventListener('error', function () { fail(T('pvVideoErr')); });
+
+    if (box && box.classList.contains('play')) {
+      box.onclick = function () {
+        box.className = 'pv-loading';
+        box.textContent = T('pvLoading');
+        v.preload = 'auto';
+        try { v.load(); } catch (e) { }
+        var pr = v.play();
+        if (pr && pr.catch) pr.catch(function () { });
+        slowTimer = setTimeout(function () { if (box.parentNode) fail(T('pvVideoSlow')); }, 25000);
+      };
+    } else if (v.readyState >= 2) done();
   }
 
   function openProduct(pid) {
@@ -284,7 +330,9 @@
              : '<button class="btn btn-gold" id="pvAdd">🛍 ' + esc(T('btnBuy')) + '</button>'),
       onRender: function (ov) {
         function paint() {
-          $('#pvStage', ov).innerHTML = stageHtml(list[idx], p);
+          var stage = $('#pvStage', ov);
+          stage.innerHTML = stageHtml(list[idx], p);
+          wireVideo(stage, list[idx]);
           var tb = $('#pvThumbs', ov);
           if (!tb) return;
           tb.innerHTML = list.map(function (it, i) {

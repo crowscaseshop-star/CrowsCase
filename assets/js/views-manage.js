@@ -172,6 +172,28 @@
     if (it.type === 'video') return '<video src="' + esc(it.url) + '#t=0.5" muted playsinline preload="metadata"></video>';
     return '<img src="' + esc(it.url) + '" alt="">';
   }
+  /* อ่านขนาดจริงของไฟล์ก่อนอัปโหลด เพื่อให้กรอบแสดงผลบนหน้าเว็บพอดีตั้งแต่แรก
+     (วิดีโอจากมือถือมักเป็นแนวตั้ง ถ้าไม่รู้สัดส่วนจะโดนบีบเป็นแถบแบน) */
+  function readDimensions(file, kind) {
+    return new Promise(function (res) {
+      var url = URL.createObjectURL(file);
+      var done = function (w, h) { URL.revokeObjectURL(url); res({ w: w || 0, h: h || 0 }); };
+      var to = setTimeout(function () { done(0, 0); }, 8000);
+      if (kind === 'video') {
+        var v = document.createElement('video');
+        v.preload = 'metadata'; v.muted = true;
+        v.onloadedmetadata = function () { clearTimeout(to); done(v.videoWidth, v.videoHeight); };
+        v.onerror = function () { clearTimeout(to); done(0, 0); };
+        v.src = url;
+      } else {
+        var i = new Image();
+        i.onload = function () { clearTimeout(to); done(i.naturalWidth, i.naturalHeight); };
+        i.onerror = function () { clearTimeout(to); done(0, 0); };
+        i.src = url;
+      }
+    });
+  }
+
   /* รูปหลักของสินค้า = รูปภาพชิ้นแรกในคลังสื่อ */
   function coverOf(media, fallbackEmoji) {
     var img = (media || []).find(function (m) { return m.type === 'image'; });
@@ -283,8 +305,9 @@
             busy('กำลังอัปโหลด ' + (i + 1) + '/' + list.length + '…');
             try {
               if (cloudOn()) {
+                var dim = await readDimensions(f, kind);
                 var r = await Cloud.uploadMedia(f, pid);
-                media.push({ type: kind, url: r.url, path: r.path });
+                media.push({ type: kind, url: r.url, path: r.path, w: dim.w, h: dim.h });
               } else {
                 if (kind === 'video') { UI.toast('อัปโหลดวิดีโอต้องเชื่อม Supabase ก่อน — ใช้ลิงก์ YouTube แทนได้', 'warn', 5000); continue; }
                 if (f.size > 1.5 * 1024 * 1024) { UI.toast(f.name + ' ใหญ่เกิน 1.5 MB (โหมดออฟไลน์)', 'err', 4000); continue; }

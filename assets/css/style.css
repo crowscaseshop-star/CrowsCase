@@ -336,10 +336,25 @@ tbody tr:hover{background:rgba(212,175,55,.045)}
 
 /* ---------- หน้าต่างดูตัวอย่างสินค้า (หน้าเว็บลูกค้า) ---------- */
 .pv-stage{position:relative;border-radius:14px;overflow:hidden;background:#0b0b0e;border:1px solid var(--line-soft);
-  aspect-ratio:4/3;display:grid;place-items:center}
-.pv-stage img,.pv-stage video{width:100%;height:100%;object-fit:contain;background:#0b0b0e}
-.pv-stage iframe{width:100%;height:100%;border:0}
+  min-height:240px;display:grid;place-items:center}
+/* ไม่บังคับสัดส่วนกรอบ ให้กรอบพอดีกับรูปจริง รูปจึงเต็มกรอบเสมอและไม่ถูกตัด */
+/* รูปกินเต็มความกว้างกรอบเสมอ กรอบสูงตามรูปจริง ไม่มีขอบดำเหลือ */
+.pv-stage img{width:100%;height:auto;max-height:min(70vh,660px);object-fit:contain;display:block}
+/* สัดส่วนสำรองก่อนรู้ขนาดไฟล์จริง (สไตล์ inline จากข้อมูลไฟล์จะทับค่านี้) */
+.pv-stage video{width:100%;height:auto;aspect-ratio:4/3;max-height:min(70vh,660px);object-fit:contain;background:#000;display:block}
+.pv-stage iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
 .pv-stage .emoji{font-size:96px}
+.pv-loading{position:absolute;inset:0;display:grid;place-items:center;gap:6px;text-align:center;
+  background:rgba(8,8,10,.78);color:var(--muted);font-size:13px;padding:16px;pointer-events:none}
+.pv-loading.err{pointer-events:auto;color:#ffa79f}
+.pv-loading.play{cursor:pointer;pointer-events:auto;color:var(--gold-lt);font-weight:700;font-size:15px;
+  background:rgba(8,8,10,.55);transition:.15s}
+.pv-loading.play:hover{background:rgba(8,8,10,.35)}
+.pv-loading .disc{width:62px;height:62px;border-radius:50%;background:var(--grad-gold);color:#14110a;
+  display:grid;place-items:center;font-size:24px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.pv-loading a{text-decoration:underline}
+.pv-thumb .vt{display:grid;place-items:center;width:100%;height:100%;font-size:22px;
+  background:linear-gradient(160deg,#24242c,#101014)}
 .pv-thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
 .pv-thumb{position:relative;width:64px;height:64px;border-radius:9px;overflow:hidden;cursor:pointer;
   border:1px solid var(--line-soft);background:#101014;flex-shrink:0;transition:.15s}
