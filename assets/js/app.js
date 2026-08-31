@@ -13,9 +13,66 @@
   function boot() {
     DB.load();
     applySettings();
-    var u = DB.currentUser();
-    if (u) enterApp(); else showLogin();
     tickClock(); setInterval(tickClock, 30000);
+
+    /* ยังไม่ได้ตั้งค่า Supabase → ทำงานแบบเดิม (ข้อมูลอยู่ในเครื่อง) */
+    if (!global.Cloud || !Cloud.configured()) {
+      paintCloudStatus('local');
+      var u = DB.currentUser();
+      if (u) enterApp(); else showLogin();
+      return;
+    }
+
+    showLogin();
+    $('#loginBusy').style.display = '';
+    Cloud.init({ mode: 'admin', onChange: onCloudChange, onStatus: paintCloudStatus })
+      .then(function (st) {
+        $('#loginBusy').style.display = 'none';
+        if (st !== 'online') { applySettings(); return; }
+        return Cloud.session().then(function (ses) {
+          var uid = ses && ses.user && ses.user.id;
+          var me = DB.state.users.find(function (x) { return x.id === uid; });
+          if (me && me.active) { DB.setSession(uid); applySettings(); enterApp(); }
+          else if (uid) {
+            UI.toast('บัญชีนี้ยังไม่ถูกตั้งเป็นพนักงานในระบบ — ติดต่อเจ้าของร้าน', 'err', 6000);
+            Cloud.signOut();
+          }
+        });
+      })
+      .catch(function (e) {
+        $('#loginBusy').style.display = 'none';
+        UI.toast('เชื่อมต่อ Supabase ไม่สำเร็จ: ' + e.message, 'err', 6000);
+      });
+  }
+
+  /* มีข้อมูลใหม่จากเครื่องอื่น → วาดหน้าจอใหม่ */
+  var rerenderTimer = null;
+  function onCloudChange(table) {
+    clearTimeout(rerenderTimer);
+    rerenderTimer = setTimeout(function () {
+      if (!$('#app').classList.contains('active')) return;
+      applySettings(); render(); refreshBadges();
+      if (table === 'orders') {
+        var n = DB.newOrders().length;
+        if (n) UI.toast('มีออเดอร์ออนไลน์เข้าใหม่ • รอติดต่อ ' + n + ' รายการ', 'warn', 4000);
+      }
+    }, 220);
+  }
+
+  /* ป้ายสถานะการเชื่อมต่อบนแถบบน */
+  function paintCloudStatus(st, err) {
+    var el = $('#cloudStatus'); if (!el) return;
+    var map = {
+      local: ['b-mute', '● ข้อมูลในเครื่อง', 'ยังไม่ได้เชื่อม Supabase — ข้อมูลเก็บในเบราว์เซอร์เครื่องนี้เท่านั้น'],
+      connecting: ['b-warn', '● กำลังเชื่อมต่อ…', 'กำลังเชื่อมต่อ Supabase'],
+      online: ['b-ok', '● เรียลไทม์', 'เชื่อมต่อ Supabase แล้ว ข้อมูลอัปเดตอัตโนมัติทุกเครื่อง'],
+      signedout: ['b-mute', '● ยังไม่เข้าสู่ระบบ', 'กรุณาเข้าสู่ระบบ'],
+      error: ['b-danger', '● เชื่อมต่อไม่ได้', err || 'เชื่อมต่อ Supabase ไม่สำเร็จ']
+    };
+    var m = map[st] || map.local;
+    el.className = 'badge ' + m[0];
+    el.textContent = m[1];
+    el.title = m[2];
   }
 
   /* ---------- ธีม / ข้อมูลร้าน ---------- */
@@ -49,15 +106,63 @@
 
   /* ---------- Login ---------- */
   function showLogin() {
+    var cloud = global.Cloud && Cloud.configured();
     $('#login').style.display = 'grid';
     $('#app').classList.remove('active');
+
+    /* ปรับฟอร์มตามระบบล็อกอินที่ใช้อยู่ */
+    $('#lgUserLabel').textContent = cloud ? 'อีเมล' : 'ชื่อผู้ใช้';
+    $('#lgUser').type = cloud ? 'email' : 'text';
+    $('#lgUser').placeholder = cloud ? 'you@example.com' : 'admin';
+    $('#lgUser').autocomplete = cloud ? 'email' : 'username';
+    $('#loginHintLocal').style.display = cloud ? 'none' : '';
+    $('#loginHintCloud').style.display = cloud ? '' : 'none';
+    $('#lgForgot').style.display = cloud ? '' : 'none';
+
     var f = $('#loginForm');
     f.onsubmit = function (e) {
       e.preventDefault();
-      var r = DB.login($('#lgUser').value, $('#lgPass').value);
-      if (!r.ok) { UI.toast(r.msg, 'err'); $('#lgPass').select(); return; }
-      UI.toast('ยินดีต้อนรับ ' + r.user.name, 'ok');
-      enterApp();
+      var user = $('#lgUser').value, pass = $('#lgPass').value;
+
+      if (!cloud) {
+        var r = DB.login(user, pass);
+        if (!r.ok) { UI.toast(r.msg, 'err'); $('#lgPass').select(); return; }
+        UI.toast('ยินดีต้อนรับ ' + r.user.name, 'ok');
+        enterApp();
+        return;
+      }
+
+      $('#loginBusy').style.display = '';
+      Cloud.signIn(user, pass).then(function (res) {
+        if (!res.ok) { $('#loginBusy').style.display = 'none'; UI.toast(res.msg, 'err'); $('#lgPass').select(); return; }
+        return Cloud.afterLogin().then(function () {
+          $('#loginBusy').style.display = 'none';
+          var me = DB.state.users.find(function (x) { return x.id === res.user.id; });
+          if (!me) { UI.toast('บัญชีนี้ยังไม่ถูกตั้งเป็นพนักงานในระบบ', 'err', 6000); Cloud.signOut(); return; }
+          if (!me.active) { UI.toast('บัญชีนี้ถูกระงับการใช้งาน', 'err'); Cloud.signOut(); return; }
+          me.lastLogin = DB.nowISO();
+          DB.log(me, 'เข้าสู่ระบบ', '');
+          DB.setSession(me.id);
+          applySettings();
+          UI.toast('ยินดีต้อนรับ ' + me.name, 'ok');
+          enterApp();
+        });
+      }).catch(function (e) {
+        $('#loginBusy').style.display = 'none';
+        UI.toast('เข้าสู่ระบบไม่สำเร็จ: ' + e.message, 'err', 5000);
+      });
+    };
+
+    $('#lgForgot').onclick = function (ev) {
+      ev.preventDefault();
+      var email = ($('#lgUser').value || '').trim();
+      if (!email) return UI.toast('กรอกอีเมลก่อน แล้วกดลิงก์นี้อีกครั้ง', 'warn');
+      var sb = Cloud.client();
+      if (!sb) return UI.toast('ยังเชื่อมต่อ Supabase ไม่ได้', 'err');
+      sb.auth.resetPasswordForEmail(email).then(function (r) {
+        if (r.error) UI.toast(r.error.message, 'err');
+        else UI.toast('ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่ ' + email + ' แล้ว', 'ok', 5000);
+      });
     };
   }
 
@@ -141,7 +246,10 @@
     boot();
     $('#btnLogout').onclick = function () {
       UI.confirmBox('ออกจากระบบ', 'ต้องการออกจากระบบหรือไม่?', 'ออกจากระบบ', function () {
-        DB.logout(); Views.posReset(); location.reload();
+        DB.logout(); Views.posReset();
+        if (global.Cloud && Cloud.configured()) {
+          Cloud.signOut().then(function () { location.reload(); });
+        } else location.reload();
       });
     };
     $('#menuToggle').onclick = function () { $('#sidebar').classList.toggle('open'); };

@@ -21,7 +21,7 @@
     <div class="sub" data-tagline>PREMIUM COLLECTION</div>
     <form id="loginForm">
       <div class="field">
-        <label>ชื่อผู้ใช้</label>
+        <label id="lgUserLabel">ชื่อผู้ใช้</label>
         <input class="input" id="lgUser" autocomplete="username" placeholder="admin" required>
       </div>
       <div class="field">
@@ -29,12 +29,18 @@
         <input class="input" id="lgPass" type="password" autocomplete="current-password" placeholder="••••" required>
       </div>
       <button class="btn btn-gold btn-block" type="submit" style="margin-top:8px">เข้าสู่ระบบ</button>
+      <div id="loginBusy" style="display:none;text-align:center;font-size:12.5px;color:var(--gold-lt);margin-top:10px">กำลังเชื่อมต่อฐานข้อมูล…</div>
+      <div style="text-align:center;margin-top:10px"><a href="#" id="lgForgot" style="display:none;font-size:12.5px">ลืมรหัสผ่าน? ส่งลิงก์ตั้งใหม่ทางอีเมล</a></div>
     </form>
-    <div class="hint-box">
+    <div class="hint-box" id="loginHintLocal">
       บัญชีตัวอย่างสำหรับทดลองใช้<br>
       <b style="color:var(--gold-lt)">admin / 1234</b> (เจ้าของร้าน — เห็นทุกเมนู)<br>
       <b style="color:var(--gold-lt)">manager / 1234</b> (ผู้จัดการ) &nbsp;•&nbsp;
       <b style="color:var(--gold-lt)">staff / 1234</b> (พนักงานขาย)
+    </div>
+    <div class="hint-box" id="loginHintCloud" style="display:none">
+      เข้าสู่ระบบด้วย <b style="color:var(--gold-lt)">อีเมลและรหัสผ่าน</b> ที่เจ้าของร้านสร้างให้<br>
+      ข้อมูลทั้งหมดซิงก์เรียลไทม์ผ่าน Supabase
     </div>
     <div style="text-align:center;margin-top:16px">
       <a href="order.html" style="font-size:13px">→ ไปหน้าสั่งซื้อสำหรับลูกค้า</a>
@@ -74,6 +80,7 @@
         <div class="crumb" id="pageCrumb"></div>
       </div>
       <div class="top-actions">
+        <span class="badge b-mute" id="cloudStatus" title="สถานะการเชื่อมต่อฐานข้อมูล">● ข้อมูลในเครื่อง</span>
         <span class="clock" id="clock"></span>
         <button class="btn btn-sm" id="btnShop">🛍 หน้าร้านออนไลน์</button>
       </div>
@@ -85,8 +92,10 @@
 <div class="overlay" id="overlay"></div>
 <div class="toasts" id="toasts"></div>
 
+<script src="assets/js/config.js"></script>
 <script src="assets/js/store.js"></script>
 <script src="assets/js/ui.js"></script>
+<script src="assets/js/cloud.js"></script>
 <script src="assets/js/views-sales.js"></script>
 <script src="assets/js/views-manage.js"></script>
 <script src="assets/js/app.js"></script>

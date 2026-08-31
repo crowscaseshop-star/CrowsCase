@@ -532,9 +532,16 @@
         '</div>' +
         '<div class="row">' +
           '<div class="field"><label>ชื่อผู้ใช้ (username) <span class="req">*</span></label>' +
-            '<input class="input" id="uUser" value="' + esc(u ? u.username : '') + '" ' + (u ? '' : '') + ' placeholder="ภาษาอังกฤษ ไม่เว้นวรรค"></div>' +
-          (u ? '' : '<div class="field"><label>รหัสผ่าน <span class="req">*</span></label><input class="input" id="uPass" type="text" value="1234"></div>') +
+            '<input class="input" id="uUser" value="' + esc(u ? u.username : '') + '" placeholder="ภาษาอังกฤษ ไม่เว้นวรรค"></div>' +
+          (cloudOn()
+            ? '<div class="field"><label>อีเมลสำหรับเข้าสู่ระบบ <span class="req">*</span></label>' +
+                '<input class="input" id="uEmail" type="email" value="' + esc(u ? (u.email || '') + '' : '') + '" ' +
+                (u ? 'disabled' : 'placeholder="staff@example.com"') + '></div>'
+            : '') +
+          (u ? '' : '<div class="field"><label>รหัสผ่าน' + (cloudOn() ? ' (อย่างน้อย 6 ตัว)' : '') + ' <span class="req">*</span></label>' +
+                '<input class="input" id="uPass" type="text" value="' + (cloudOn() ? '' : '1234') + '"></div>') +
         '</div>' +
+        (cloudOn() && !u ? UI.tip('ระบบจะสร้างบัญชีเข้าสู่ระบบใน Supabase ให้อัตโนมัติ พนักงานใช้ <b>อีเมลและรหัสผ่านนี้</b> เข้าระบบได้ทันที และเปลี่ยนรหัสผ่านเองภายหลังได้จากลิงก์ "ลืมรหัสผ่าน"') : '') +
         '<div class="field"><label>ตำแหน่ง (เลือกเพื่อกำหนดสิทธิ์อัตโนมัติ)</label>' +
           '<select class="input" id="uRole">' + Object.keys(DB.ROLES).map(function (k) {
             return '<option value="' + k + '" ' + (role === k ? 'selected' : '') + '>' + esc(DB.ROLES[k].name) + '</option>';
@@ -581,6 +588,28 @@
           var ac = $('#uActive', ov); if (ac) u.active = ac.checked;
           DB.logAct('แก้ไขบัญชีพนักงาน', name + ' (' + un + ') • ตำแหน่ง ' + DB.ROLES[rl].name);
           UI.toast('บันทึกข้อมูลพนักงานแล้ว', 'ok');
+        } else if (cloudOn()) {
+          /* สร้างบัญชีเข้าสู่ระบบใน Supabase Auth ก่อน แล้วค่อยบันทึกข้อมูลพนักงาน */
+          var email = ($('#uEmail', ov).value || '').trim();
+          var pw2 = $('#uPass', ov).value || '';
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { UI.toast('กรุณากรอกอีเมลให้ถูกต้อง', 'err'); return false; }
+          if (pw2.length < 6) { UI.toast('รหัสผ่านต้องยาวอย่างน้อย 6 ตัวอักษร', 'err'); return false; }
+          var btn = $('#mdOk', ov);
+          btn.disabled = true; btn.textContent = 'กำลังสร้างบัญชี…';
+          Cloud.createAuthUser(email, pw2).then(function (uid) {
+            S.users.push({
+              id: uid, email: email, username: un, name: name,
+              role: rl, menus: m, actions: a, phone: $('#uPhone', ov).value.trim(),
+              active: true, createdAt: DB.nowISO(), lastLogin: null
+            });
+            DB.logAct('สร้างบัญชีพนักงาน', name + ' (' + email + ') • ตำแหน่ง ' + DB.ROLES[rl].name);
+            UI.closeModal(); App.render();
+            UI.toast('สร้างบัญชี ' + email + ' เรียบร้อย — แจ้งรหัสผ่านให้พนักงานได้เลย', 'ok', 6000);
+          }).catch(function (err) {
+            btn.disabled = false; btn.textContent = 'สร้างบัญชี';
+            UI.toast('สร้างบัญชีไม่สำเร็จ: ' + err.message, 'err', 6000);
+          });
+          return false;
         } else {
           var pw = $('#uPass', ov).value || '1234';
           S.users.push({
@@ -596,8 +625,81 @@
     });
   }
 
+  function cloudOn() { return !!(window.Cloud && Cloud.isOn()); }
+
+  /* การ์ดสถานะ Supabase ในหน้าจัดการเว็บไซต์ */
+  function cloudCard() {
+    var C = window.Cloud;
+    var st = C ? C.status : 'local';
+    var badge = {
+      online: '<span class="badge b-ok">● เชื่อมต่อแล้ว — ซิงก์เรียลไทม์</span>',
+      connecting: '<span class="badge b-warn">● กำลังเชื่อมต่อ…</span>',
+      error: '<span class="badge b-danger">● เชื่อมต่อไม่สำเร็จ</span>',
+      signedout: '<span class="badge b-mute">● ยังไม่เข้าสู่ระบบ</span>',
+      local: '<span class="badge b-mute">● ยังไม่ได้ตั้งค่า</span>'
+    }[st] || '';
+
+    var body;
+    if (st === 'online') {
+      var host = '';
+      try { host = new URL(window.CC_CONFIG.SUPABASE_URL).host; } catch (e) { }
+      body =
+        '<div class="grid g-4 mb16">' +
+          card('สินค้า', DB.state.products.length + ' รายการ', 'ซิงก์แล้ว', '▤') +
+          card('บิลขาย', DB.state.sales.length + ' บิล', 'ซิงก์แล้ว', '🧾') +
+          card('ออเดอร์ออนไลน์', DB.state.orders.length + ' รายการ', 'เข้ามาแบบเรียลไทม์', '✦') +
+          card('บัญชีพนักงาน', DB.state.users.length + ' บัญชี', 'ล็อกอินผ่าน Supabase Auth', '☗') +
+        '</div>' +
+        UI.tip('ฐานข้อมูล <b>' + esc(host) + '</b> • ทุกเครื่องที่เข้าระบบจะเห็นข้อมูลชุดเดียวกันและอัปเดตทันทีโดยไม่ต้องรีเฟรช ' +
+          '• ออเดอร์ที่ลูกค้าสั่งจากหน้าเว็บจะเด้งเข้ามาที่เมนู Order Online ทันที') +
+        '<div class="flex" style="gap:9px;flex-wrap:wrap;margin-top:14px">' +
+          '<button class="btn" id="cloudPull">⬇ ดึงข้อมูลล่าสุดจากคลาวด์</button>' +
+          '<button class="btn" id="cloudPush">⬆ อัปโหลดข้อมูลในเครื่องขึ้นคลาวด์ทั้งหมด</button>' +
+        '</div>';
+    } else if (st === 'error') {
+      body = UI.tip('<b>เชื่อมต่อไม่สำเร็จ:</b> ' + esc(C ? C.error : '') +
+        '<br>ตรวจสอบว่า URL และ anon key ใน <b>assets/js/config.js</b> ถูกต้อง และรันไฟล์ <b>supabase/schema.sql</b> ใน SQL Editor แล้ว');
+    } else {
+      body =
+        UI.tip('ตอนนี้ข้อมูลเก็บอยู่ใน<b>เบราว์เซอร์เครื่องนี้เครื่องเดียว</b> — ออเดอร์ที่ลูกค้าสั่งจากเว็บจริงจะยังไม่เข้ามาที่นี่') +
+        '<div class="sec-title" style="margin-top:16px">วิธีเปิดใช้งานฐานข้อมูลกลาง</div>' +
+        '<div class="stack">' +
+          bullet('1. สร้างโปรเจกต์ที่ supabase.com', 'เลือกภูมิภาค Singapore จะเร็วที่สุดสำหรับผู้ใช้ในไทย') +
+          bullet('2. รันไฟล์ supabase/schema.sql', 'เปิด SQL Editor ในโปรเจกต์ → วางทั้งไฟล์ → Run (สร้างตาราง สิทธิ์ และเปิด Realtime ให้ครบ)') +
+          bullet('3. ใส่ค่าใน assets/js/config.js', 'คัดลอก Project URL และ anon key จาก Project Settings → API (ห้ามใช้ service_role key)') +
+          bullet('4. สร้างบัญชีเจ้าของร้านคนแรก', 'ทำตามคำอธิบายท้ายไฟล์ schema.sql แล้วเข้าสู่ระบบด้วยอีเมลนั้น') +
+        '</div>';
+    }
+    return '<div class="card gold-edge mb16"><div class="card-head"><h3>☁ ฐานข้อมูลกลาง & ซิงก์เรียลไทม์ (Supabase)</h3>' +
+      '<div class="sp">' + badge + '</div></div>' + body + '</div>';
+  }
+
   function passForm(id) {
     var u = DB.state.users.find(function (x) { return x.id === id; });
+
+    /* โหมด Supabase: รหัสผ่านอยู่ในระบบ Auth เปลี่ยนแทนกันไม่ได้
+       จึงส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลของพนักงานแทน */
+    if (cloudOn()) {
+      UI.modal({
+        title: 'รหัสผ่าน — ' + u.name,
+        body: UI.tip('ระบบเก็บรหัสผ่านไว้ใน Supabase Auth แบบเข้ารหัส แม้แต่เจ้าของร้านก็ดูหรือตั้งแทนกันไม่ได้ ' +
+          '<b>วิธีที่ปลอดภัยคือส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลของพนักงาน</b>') +
+          '<div class="field" style="margin-top:14px"><label>อีเมลของพนักงาน</label>' +
+          '<input class="input" id="rpEmail" type="email" value="' + esc(u.email || '') + '"></div>',
+        okText: '📧 ส่งลิงก์ตั้งรหัสผ่านใหม่',
+        onOk: function (ov) {
+          var em = ($('#rpEmail', ov).value || '').trim();
+          if (!em) { UI.toast('กรุณากรอกอีเมล', 'err'); return false; }
+          var sb = Cloud.client();
+          sb.auth.resetPasswordForEmail(em).then(function (r) {
+            if (r.error) UI.toast(r.error.message, 'err', 5000);
+            else { UI.toast('ส่งลิงก์ไปที่ ' + em + ' แล้ว', 'ok', 5000); DB.logAct('ส่งลิงก์ตั้งรหัสผ่านใหม่', em); }
+          });
+        }
+      });
+      return;
+    }
+
     UI.modal({
       title: 'เปลี่ยนรหัสผ่าน — ' + u.name,
       body: '<div class="field"><label>รหัสผ่านใหม่ <span class="req">*</span></label><input class="input" id="np" type="text" placeholder="อย่างน้อย 4 ตัวอักษร"></div>' +
@@ -725,6 +827,9 @@
         '</div>' +
         '<div class="hint">โครงสีหลักยังคงเป็นดำ-ทองพรีเมียม เปลี่ยนได้เฉพาะเฉดทองเพื่อให้เข้ากับแบรนด์</div></div>' +
 
+      /* ---------- Supabase ---------- */
+      cloudCard() +
+
       '<div class="card mb16"><div class="card-head"><h3>หมวดหมู่สินค้า</h3>' +
         '<div class="sp"><button class="btn btn-sm" id="catAdd">+ เพิ่มหมวดหมู่</button></div></div>' +
         '<div class="chip-row" id="catList">' + DB.state.categories.map(function (c, i) {
@@ -799,6 +904,17 @@
     $$('#accents .chip').forEach(function (c) {
       c.onclick = function () { S.accent = c.dataset.acc; DB.save(); App.applySettings(); App.render(); UI.toast('เปลี่ยนเฉดสีแล้ว', 'ok', 1400); };
     });
+    if ($('#cloudPull')) $('#cloudPull').onclick = function () {
+      Cloud.pull().then(function () { Cloud.takeSnapshot(); App.applySettings(); App.render(); UI.toast('ดึงข้อมูลล่าสุดแล้ว', 'ok'); })
+        .catch(function (e) { UI.toast('ดึงข้อมูลไม่สำเร็จ: ' + e.message, 'err'); });
+    };
+    if ($('#cloudPush')) $('#cloudPush').onclick = function () {
+      UI.confirmBox('อัปโหลดข้อมูลขึ้นคลาวด์', 'ส่งข้อมูลทุกอย่างในเครื่องนี้ขึ้นฐานข้อมูลกลาง (ทับข้อมูลที่มี id เดียวกัน)<br>' +
+        '<span style="font-size:12px;color:var(--muted-2)">ใช้ตอนย้ายข้อมูลจากเครื่องเดิมขึ้นคลาวด์ครั้งแรก</span>', 'อัปโหลด', function () {
+          Cloud.push(true).then(function () { UI.toast('อัปโหลดข้อมูลขึ้นคลาวด์แล้ว', 'ok'); })
+            .catch(function (e) { UI.toast('อัปโหลดไม่สำเร็จ: ' + e.message, 'err'); });
+        });
+    };
     $('#catAdd').onclick = function () {
       UI.modal({
         title: 'เพิ่มหมวดหมู่สินค้า',

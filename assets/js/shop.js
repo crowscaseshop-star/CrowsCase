@@ -324,4 +324,17 @@
     drawFab();
   }
   renderAll();
+
+  /* เชื่อม Supabase (ถ้าตั้งค่าไว้): ดึงสินค้า/ตั้งค่าล่าสุด และรับอัปเดตเรียลไทม์
+     ทางร้านแก้ราคาหรือสต๊อกในแดชบอร์ด หน้าเว็บลูกค้าจะเปลี่ยนตามทันทีโดยไม่ต้องรีเฟรช */
+  if (window.Cloud && Cloud.configured()) {
+    Cloud.init({
+      mode: 'public',
+      onChange: function () {
+        cart = cart.filter(function (c) { return DB.product(c.pid); });
+        saveCart(); renderAll();
+      }
+    }).then(function () { renderAll(); })
+      .catch(function (e) { console.warn('[cloud]', e); });
+  }
 })();

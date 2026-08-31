@@ -300,6 +300,14 @@
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(state)); }
     catch (e) { console.error('บันทึกข้อมูลไม่สำเร็จ', e); }
+    /* ถ้าเชื่อม Supabase อยู่ ให้ส่งเฉพาะแถวที่เปลี่ยนขึ้นคลาวด์ (หน่วงรวบไว้ก่อน) */
+    if (global.Cloud) global.Cloud.schedulePush();
+  }
+
+  /* ตั้ง session เอง (ใช้ตอนล็อกอินผ่าน Supabase Auth) */
+  function setSession(userId) {
+    state.session = userId ? { userId: userId, at: nowISO() } : null;
+    save();
   }
 
   function reset() { localStorage.removeItem(KEY); state = defaultState(); save(); }
@@ -461,6 +469,7 @@
     get state() { return state; },
     load: load, save: save, reset: reset,
     login: login, logout: logout, currentUser: currentUser, can: can, canSee: canSee, hash: hash,
+    setSession: setSession, log: log,
     logAct: logAct, stockLog: stockLog,
     product: product, activeSales: activeSales, salesBetween: salesBetween,
     sumTotal: sumTotal, sumProfit: sumProfit, lowStock: lowStock, newOrders: newOrders, featured: featured,
