@@ -197,3 +197,29 @@ alter table public.activity   replica identity full;
 --  ขั้นที่ 3  Authentication → Providers → Email
 --            ปิด "Confirm email" เพื่อให้สร้างบัญชีพนักงานจากในแอปได้ทันที
 -- ============================================================
+
+-- ============================================================
+--  6) ที่เก็บไฟล์รูปภาพและวิดีโอสินค้า (Supabase Storage)
+--     รันซ้ำได้ ไม่ต้องกลัวข้อมูลหาย
+-- ============================================================
+insert into storage.buckets (id, name, public, file_size_limit)
+values ('product-media', 'product-media', true, 52428800)   -- จำกัดไฟล์ละ 50 MB
+on conflict (id) do update set public = true, file_size_limit = 52428800;
+
+drop policy if exists "product_media_public_read"   on storage.objects;
+drop policy if exists "product_media_staff_insert"  on storage.objects;
+drop policy if exists "product_media_staff_update"  on storage.objects;
+drop policy if exists "product_media_staff_delete"  on storage.objects;
+
+-- ลูกค้าทั่วไปเปิดดูรูป/วิดีโอได้ (ต้องใช้แสดงบนหน้าเว็บร้าน)
+create policy "product_media_public_read" on storage.objects
+  for select using (bucket_id = 'product-media');
+
+-- เฉพาะพนักงานเท่านั้นที่อัปโหลด/แก้/ลบไฟล์ได้
+create policy "product_media_staff_insert" on storage.objects
+  for insert with check (bucket_id = 'product-media' and public.is_staff());
+create policy "product_media_staff_update" on storage.objects
+  for update using (bucket_id = 'product-media' and public.is_staff())
+  with check (bucket_id = 'product-media' and public.is_staff());
+create policy "product_media_staff_delete" on storage.objects
+  for delete using (bucket_id = 'product-media' and public.is_staff());

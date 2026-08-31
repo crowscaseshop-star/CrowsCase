@@ -119,6 +119,10 @@
     $('#heroBuy').style.display = '';
     $('#heroBuy').disabled = p.qty <= 0;
     $('#heroBuy').onclick = function () { add(p.id); openCart(); };
+    var hi = $('#heroImage');
+    hi.style.cursor = 'zoom-in';
+    hi.title = T('previewBtn');
+    hi.onclick = function () { openProduct(p.id); };
   }
 
   /* ================= เลือกซื้อ ================= */
@@ -157,11 +161,15 @@
     box.innerHTML = list.map(function (p) {
       var out = p.qty <= 0;
       var inCart = cart.find(function (c) { return c.pid === p.id; });
+      var ml = mediaOf(p), mc = ml.length;
+      var mi = ml.filter(function (x) { return x.type === 'image'; }).length, mv = mc - mi;
       return '<div class="prod" style="cursor:default">' +
         (out ? '<span class="badge b-danger tag-out">' + esc(T('tagSoldOut')) + '</span>'
              : (feat && feat.id === p.id ? '<span class="badge b-gold tag-out">' + esc(T('tagRecommend')) + '</span>' : '')) +
-        '<div class="prod-img" style="height:160px;font-size:56px">' +
-          (p.imageType === 'url' && p.image ? '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '">' : esc(p.image || '📦')) + '</div>' +
+        '<div class="prod-img" style="height:160px;font-size:56px;position:relative" data-preview="' + p.id + '">' +
+          (p.imageType === 'url' && p.image ? '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '">' : esc(p.image || '📦')) +
+          (mc ? '<span class="media-pill">' + (mi ? '🖼 ' + mi : '') + (mi && mv ? '  ' : '') + (mv ? '🎬 ' + mv : '') + '</span>' : '') +
+          '<span class="peek">🔍 ' + esc(T('previewBtn')) + '</span></div>' +
         '<div class="prod-body" style="padding:13px">' +
           '<div style="font-size:10.5px;letter-spacing:1.2px;color:var(--muted-2);text-transform:uppercase">' + esc(p.category) + '</div>' +
           '<div class="prod-nm" style="height:auto;margin:5px 0 9px;font-size:13.5px">' + esc(p.name) + '</div>' +
@@ -172,6 +180,10 @@
         '</div></div>';
     }).join('');
     $$('[data-add]').forEach(function (b) { b.onclick = function () { add(b.dataset.add); }; });
+    $$('[data-preview]').forEach(function (e) {
+      e.style.cursor = 'zoom-in';
+      e.onclick = function () { openProduct(e.dataset.preview); };
+    });
   }
 
   /* ================= เกี่ยวกับ + ติดต่อ ================= */
@@ -217,6 +229,76 @@
     function box(l, v) {
       return '<div class="info-box"><div class="lb">' + esc(l) + '</div><div class="vl">' + v + '</div></div>';
     }
+  }
+
+  /* ================= หน้าต่างดูตัวอย่างสินค้า ================= */
+  function mediaOf(p) {
+    var list = (p.media || []).filter(function (m) { return m && m.url; });
+    if (!list.length && p.imageType === 'url' && p.image) list = [{ type: 'image', url: p.image }];
+    return list;
+  }
+  function stageHtml(it, p) {
+    if (!it) return '<span class="emoji">' + esc(p.image || '📦') + '</span>';
+    if (it.type === 'youtube') {
+      return '<iframe src="https://www.youtube-nocookie.com/embed/' + esc(it.id || '') +
+        '?rel=0" title="' + esc(p.name) + '" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>';
+    }
+    if (it.type === 'video') return '<video src="' + esc(it.url) + '" controls playsinline preload="metadata"></video>';
+    return '<img src="' + esc(it.url) + '" alt="' + esc(p.name) + '">';
+  }
+  function thumbHtml(it) {
+    if (it.type === 'youtube') return '<img src="https://img.youtube.com/vi/' + esc(it.id || '') + '/mqdefault.jpg" alt=""><span class="p">▶</span>';
+    if (it.type === 'video') return '<video src="' + esc(it.url) + '#t=0.5" muted playsinline preload="metadata"></video><span class="p">▶</span>';
+    return '<img src="' + esc(it.url) + '" alt="">';
+  }
+
+  function openProduct(pid) {
+    var p = DB.product(pid); if (!p) return;
+    var list = mediaOf(p), idx = 0;
+    var out = p.qty <= 0;
+
+    UI.modal({
+      title: T('pvTitle'), wide: true,
+      body:
+        '<div class="pv-grid">' +
+          '<div>' +
+            '<div class="pv-stage" id="pvStage"></div>' +
+            (list.length > 1 ? '<div class="pv-thumbs" id="pvThumbs"></div>' : '') +
+            (!list.length ? '<div class="hint" style="text-align:center;margin-top:10px">' + esc(T('pvNoMedia')) + '</div>' : '') +
+          '</div>' +
+          '<div class="pv-side">' +
+            '<div class="cat">' + esc(p.category) + '</div>' +
+            '<h4>' + esc(p.name) + '</h4>' +
+            '<div class="pv-price">' + cur() + money(p.price) + '</div>' +
+            '<div style="margin:12px 0 18px">' +
+              (out ? '<span class="badge b-danger">' + esc(T('heroSoldOut')) + '</span>'
+                   : '<span class="badge b-ok">' + esc(T('heroReady')) + '</span> ' +
+                     '<span class="badge b-mute">' + esc(T('pvStock')) + ' ' + p.qty + ' ' + esc(p.unit || '') + '</span>') +
+            '</div>' +
+            '<div class="sumline" style="border-top:1px dashed var(--line);padding-top:12px">' +
+              '<span>' + esc(T('heroCode')) + '</span><span>' + esc(p.sku) + '</span></div>' +
+          '</div>' +
+        '</div>',
+      footHtml: '<button class="btn btn-ghost" data-close>' + esc(T('btnCancel')) + '</button>' +
+        (out ? '<button class="btn" disabled>' + esc(T('btnSoldOut')) + '</button>'
+             : '<button class="btn btn-gold" id="pvAdd">🛍 ' + esc(T('btnBuy')) + '</button>'),
+      onRender: function (ov) {
+        function paint() {
+          $('#pvStage', ov).innerHTML = stageHtml(list[idx], p);
+          var tb = $('#pvThumbs', ov);
+          if (!tb) return;
+          tb.innerHTML = list.map(function (it, i) {
+            return '<div class="pv-thumb ' + (i === idx ? 'active' : '') + '" data-i="' + i + '">' + thumbHtml(it) + '</div>';
+          }).join('');
+          $$('.pv-thumb', tb).forEach(function (t) {
+            t.onclick = function () { idx = +t.dataset.i; paint(); };
+          });
+        }
+        paint();
+        var addBtn = $('#pvAdd', ov);
+        if (addBtn) addBtn.onclick = function () { add(p.id); UI.closeModal(); };
+      }
+    });
   }
 
   /* ================= ตะกร้า & สั่งซื้อ ================= */

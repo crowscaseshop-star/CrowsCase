@@ -314,6 +314,34 @@
     if (changed) { try { onChange(table, payload); } catch (e) { } }
   }
 
+  /* ---------- ไฟล์รูปภาพ / วิดีโอสินค้า (Supabase Storage) ---------- */
+  var BUCKET = 'product-media';
+
+  async function uploadMedia(file, productId) {
+    if (!sb) throw new Error('ต้องเชื่อมต่อ Supabase ก่อนจึงจะอัปโหลดไฟล์ได้');
+    var ext = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'bin';
+    var path = 'products/' + (productId || 'misc') + '/' +
+      Date.now().toString(36) + Math.random().toString(36).slice(2, 8) + '.' + ext;
+    var r = await sb.storage.from(BUCKET).upload(path, file, {
+      cacheControl: '31536000', upsert: false, contentType: file.type || undefined
+    });
+    if (r.error) {
+      var m = r.error.message || '';
+      if (/Bucket not found/i.test(m)) m = 'ยังไม่มีที่เก็บไฟล์ — กรุณารันไฟล์ supabase/schema.sql ใน SQL Editor อีกครั้ง';
+      else if (/exceeded the maximum allowed size|Payload too large/i.test(m)) m = 'ไฟล์ใหญ่เกินที่ระบบอนุญาต (สูงสุด 50 MB)';
+      else if (/row-level security|Unauthorized/i.test(m)) m = 'ไม่มีสิทธิ์อัปโหลด — กรุณาเข้าสู่ระบบด้วยบัญชีพนักงานอีกครั้ง';
+      throw new Error(m);
+    }
+    var pub = sb.storage.from(BUCKET).getPublicUrl(path);
+    return { url: pub.data.publicUrl, path: path };
+  }
+
+  async function deleteMedia(path) {
+    if (!sb || !path) return;
+    try { await sb.storage.from(BUCKET).remove([path]); }
+    catch (e) { console.warn('[cloud] ลบไฟล์ไม่สำเร็จ', e); }
+  }
+
   /* ---------- บัญชีผู้ใช้ ---------- */
   async function session() {
     if (!sb) return null;
@@ -364,6 +392,7 @@
     init: init, pull: pull, push: push, schedulePush: schedulePush,
     afterLogin: afterLogin, takeSnapshot: takeSnapshot,
     session: session, signIn: signIn, signOut: signOut, createAuthUser: createAuthUser,
+    uploadMedia: uploadMedia, deleteMedia: deleteMedia,
     client: function () { return sb; }
   };
 })(window);

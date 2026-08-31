@@ -109,7 +109,7 @@
         var mg = p.price ? ((p.price - p.cost) / p.price * 100).toFixed(0) : 0;
         return '<tr>' +
           '<td><div class="flex">' + UI.imgHtml(p) + '<div><div style="font-weight:600">' + esc(p.name) + '</div>' +
-            '<div style="font-size:11px;color:var(--muted-2)">' + esc(p.sku) + '</div></div></div></td>' +
+            '<div style="font-size:11px;color:var(--muted-2)">' + esc(p.sku) + mediaCount(p) + '</div></div></div></td>' +
           '<td><span class="badge b-mute">' + esc(p.category) + '</span></td>' +
           (showCost ? '<td class="num">' + money(p.cost) + '</td>' : '') +
           '<td class="num"><b style="color:var(--gold-lt)">' + money(p.price) + '</b></td>' +
@@ -153,11 +153,40 @@
     }).join('') : UI.empty('📋', 'ยังไม่มีการเคลื่อนไหว');
   }
 
+  /* จำนวนรูป/วิดีโอ แสดงใต้ชื่อสินค้าในตารางสต๊อก */
+  function mediaCount(p) {
+    var m = p.media || [];
+    if (!m.length) return '';
+    var img = m.filter(function (x) { return x.type === 'image'; }).length;
+    var vid = m.length - img;
+    return ' • <span style="color:var(--gold-dk)">' + (img ? '🖼 ' + img : '') + (img && vid ? ' ' : '') + (vid ? '🎬 ' + vid : '') + '</span>';
+  }
+
+  /* ---------- ตัวช่วยจัดการสื่อของสินค้า ---------- */
+  function ytId(url) {
+    var m = String(url).match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : '';
+  }
+  function mediaThumb(it) {
+    if (it.type === 'youtube') return '<img src="https://img.youtube.com/vi/' + esc(it.id) + '/mqdefault.jpg" alt="">';
+    if (it.type === 'video') return '<video src="' + esc(it.url) + '#t=0.5" muted playsinline preload="metadata"></video>';
+    return '<img src="' + esc(it.url) + '" alt="">';
+  }
+  /* รูปหลักของสินค้า = รูปภาพชิ้นแรกในคลังสื่อ */
+  function coverOf(media, fallbackEmoji) {
+    var img = (media || []).find(function (m) { return m.type === 'image'; });
+    if (img) return { image: img.url, imageType: 'url' };
+    return { image: fallbackEmoji || '📦', imageType: 'emoji' };
+  }
+
   function productForm(id) {
     var p = id ? DB.product(id) : null;
     var S = DB.state;
     var canPrice = DB.can('product.price');
     var canQty = DB.can('stock.adjust');
+    var media = (p && Array.isArray(p.media)) ? JSON.parse(JSON.stringify(p.media)) : [];
+    var pid = p ? p.id : DB.uid('p');
+    var removed = [];   // ไฟล์ที่ถูกลบออก จะไปลบจริงตอนกดบันทึก
     UI.modal({
       title: p ? 'แก้ไขสินค้า' : 'เพิ่มสินค้าใหม่', wide: true,
       body:
@@ -178,16 +207,24 @@
           '<div class="field"><label>แจ้งเตือนเมื่อต่ำกว่า</label>' +
             '<input class="input" id="pMin" type="number" min="0" step="1" value="' + (p ? p.minQty : 3) + '"></div>' +
         '</div>' +
-        '<div class="divider"></div><div class="sec-title">รูปสินค้า (แสดงบนหน้าเว็บและหน้าขาย)</div>' +
-        '<div class="row" style="align-items:flex-start">' +
-          '<div class="field"><label>ไอคอน / อีโมจิ</label><input class="input" id="pEmoji" maxlength="4" value="' +
-            esc(p && p.imageType !== 'url' ? p.image : '') + '" placeholder="เช่น 💍"></div>' +
-          '<div class="field" style="flex:2"><label>หรือใช้ไฟล์รูป / ลิงก์รูป</label>' +
-            '<input class="input" id="pUrl" value="' + (p && p.imageType === 'url' ? esc(p.image) : '') + '" placeholder="https://… หรือกดอัปโหลด">' +
-            '<input type="file" id="pFile" accept="image/*" style="margin-top:8px;font-size:12px">' +
-            '<div class="hint">ไฟล์จะถูกย่อและเก็บในเครื่อง (แนะนำไม่เกิน 1 MB ต่อรูป)</div></div>' +
-          '<div style="flex:0 0 92px"><label style="font-size:12.5px;color:var(--muted)">ตัวอย่าง</label>' +
-            '<div id="pPrev" class="thumb" style="width:78px;height:78px;font-size:34px">' + (p ? (p.imageType === 'url' ? '<img src="' + esc(p.image) + '">' : esc(p.image)) : '📦') + '</div></div>' +
+        '<div class="divider"></div>' +
+        '<div class="sec-title">🖼 รูปภาพ & วิดีโอตัวอย่าง (ลูกค้าเห็นบนหน้าเว็บ)</div>' +
+        '<div class="media-grid" id="mediaGrid"></div>' +
+        '<div class="flex" style="gap:8px;flex-wrap:wrap;margin-top:10px">' +
+          '<label class="btn btn-sm btn-gold">🖼 เพิ่มรูป (เลือกได้หลายรูป)' +
+            '<input type="file" id="mImg" accept="image/*" multiple style="display:none"></label>' +
+          '<label class="btn btn-sm">🎬 เพิ่มวิดีโอ' +
+            '<input type="file" id="mVid" accept="video/*" style="display:none"></label>' +
+          '<button type="button" class="btn btn-sm" id="mUrl">🔗 ใส่ลิงก์ YouTube / ลิงก์ไฟล์</button>' +
+          '<span id="mBusy" style="display:none;font-size:12.5px;color:var(--gold-lt);align-self:center"></span>' +
+        '</div>' +
+        '<div class="hint">รูปแรกจะถูกใช้เป็น<b>รูปหลัก</b>ของสินค้า • กด ★ เพื่อเลื่อนรูปที่ต้องการขึ้นเป็นรูปหลัก • ' +
+          (cloudOn() ? 'ไฟล์เก็บบน Supabase Storage (รูปไม่เกิน 10 MB, วิดีโอไม่เกิน 50 MB)'
+                     : '<b style="color:var(--warn)">ยังไม่ได้เชื่อม Supabase</b> — อัปโหลดได้เฉพาะรูป (เก็บในเครื่อง) ส่วนวิดีโอให้ใช้ลิงก์ YouTube') + '</div>' +
+        '<div class="row" style="align-items:flex-start;margin-top:14px">' +
+          '<div class="field" style="max-width:200px"><label>ไอคอนสำรอง (ใช้เมื่อไม่มีรูป)</label>' +
+            '<input class="input" id="pEmoji" maxlength="4" value="' +
+            esc(p && p.imageType !== 'url' ? p.image : '') + '" placeholder="เช่น 📦"></div>' +
         '</div>' +
         (p ? '<div class="hint">สร้างเมื่อ ' + DB.fmtDateTime(p.createdAt) + '</div>' : ''),
       okText: p ? 'บันทึกการแก้ไข' : 'เพิ่มสินค้า',
@@ -203,30 +240,94 @@
             } else cat.selectedIndex = 0;
           }
         };
-        function prev() {
-          var u = $('#pUrl', ov).value.trim(), e = $('#pEmoji', ov).value.trim();
-          $('#pPrev', ov).innerHTML = u ? '<img src="' + esc(u) + '">' : (e || '📦');
+        /* ----- คลังรูปภาพ & วิดีโอ ----- */
+        function drawMedia() {
+          var box = $('#mediaGrid', ov);
+          if (!media.length) {
+            box.innerHTML = '<div class="media-empty">ยังไม่มีรูปหรือวิดีโอ — กดปุ่มด้านล่างเพื่อเพิ่ม</div>';
+            return;
+          }
+          box.innerHTML = media.map(function (it, i) {
+            var isCover = it.type === 'image' && media.findIndex(function (x) { return x.type === 'image'; }) === i;
+            return '<div class="media-item' + (isCover ? ' cover' : '') + '">' +
+              mediaThumb(it) +
+              (it.type !== 'image' ? '<span class="mi-play">▶</span>' : '') +
+              (isCover ? '<span class="mi-badge">รูปหลัก</span>' : '') +
+              '<div class="mi-tools">' +
+                (i > 0 ? '<button type="button" title="เลื่อนขึ้นเป็นรูปหลัก" data-mup="' + i + '">★</button>' : '') +
+                '<button type="button" title="ลบออก" data-mdel="' + i + '">✕</button>' +
+              '</div></div>';
+          }).join('');
+          $$('[data-mup]', box).forEach(function (b) {
+            b.onclick = function () { var i = +b.dataset.mup; media.unshift(media.splice(i, 1)[0]); drawMedia(); };
+          });
+          $$('[data-mdel]', box).forEach(function (b) {
+            b.onclick = function () {
+              var it = media.splice(+b.dataset.mdel, 1)[0];
+              if (it && it.path) removed.push(it.path);
+              drawMedia();
+            };
+          });
         }
-        $('#pUrl', ov).oninput = prev; $('#pEmoji', ov).oninput = prev;
-        $('#pFile', ov).onchange = function () {
-          var f = this.files[0]; if (!f) return;
-          if (f.size > 2 * 1024 * 1024) return UI.toast('ไฟล์ใหญ่เกิน 2 MB', 'err');
-          var rd = new FileReader();
-          rd.onload = function (e) { $('#pUrl', ov).value = e.target.result; prev(); };
-          rd.readAsDataURL(f);
+        function busy(msg) {
+          var b = $('#mBusy', ov);
+          b.style.display = msg ? '' : 'none';
+          b.textContent = msg || '';
+        }
+        async function addFiles(files, kind) {
+          var list = Array.prototype.slice.call(files);
+          for (var i = 0; i < list.length; i++) {
+            var f = list[i];
+            var maxMB = kind === 'video' ? 50 : 10;
+            if (f.size > maxMB * 1024 * 1024) { UI.toast(f.name + ' ใหญ่เกิน ' + maxMB + ' MB', 'err', 4000); continue; }
+            busy('กำลังอัปโหลด ' + (i + 1) + '/' + list.length + '…');
+            try {
+              if (cloudOn()) {
+                var r = await Cloud.uploadMedia(f, pid);
+                media.push({ type: kind, url: r.url, path: r.path });
+              } else {
+                if (kind === 'video') { UI.toast('อัปโหลดวิดีโอต้องเชื่อม Supabase ก่อน — ใช้ลิงก์ YouTube แทนได้', 'warn', 5000); continue; }
+                if (f.size > 1.5 * 1024 * 1024) { UI.toast(f.name + ' ใหญ่เกิน 1.5 MB (โหมดออฟไลน์)', 'err', 4000); continue; }
+                var dataUrl = await new Promise(function (res, rej) {
+                  var rd = new FileReader(); rd.onload = function (e) { res(e.target.result); }; rd.onerror = rej; rd.readAsDataURL(f);
+                });
+                media.push({ type: 'image', url: dataUrl });
+              }
+              drawMedia();
+            } catch (e) {
+              UI.toast('อัปโหลด ' + f.name + ' ไม่สำเร็จ: ' + e.message, 'err', 6000);
+            }
+          }
+          busy('');
+        }
+        $('#mImg', ov).onchange = function () { addFiles(this.files, 'image'); this.value = ''; };
+        $('#mVid', ov).onchange = function () { addFiles(this.files, 'video'); this.value = ''; };
+        $('#mUrl', ov).onclick = function () {
+          var u = prompt('วางลิงก์ YouTube หรือลิงก์ไฟล์รูป/วิดีโอ');
+          if (!u) return;
+          u = u.trim();
+          var yid = ytId(u);
+          if (yid) media.push({ type: 'youtube', url: u, id: yid });
+          else if (/\.(mp4|webm|ogg|mov)(\?|$)/i.test(u)) media.push({ type: 'video', url: u });
+          else media.push({ type: 'image', url: u });
+          drawMedia();
         };
+        drawMedia();
       },
       onOk: function (ov) {
         var name = $('#pName', ov).value.trim();
         if (!name) { UI.toast('กรุณากรอกชื่อสินค้า', 'err'); return false; }
-        var url = $('#pUrl', ov).value.trim(), emo = $('#pEmoji', ov).value.trim();
+        var emo = $('#pEmoji', ov).value.trim();
+        var cover = coverOf(media, emo);
         var data = {
           name: name, sku: $('#pSku', ov).value.trim() || nextSku(),
           category: $('#pCat', ov).value === '__new' ? S.categories[0] : $('#pCat', ov).value,
           unit: $('#pUnit', ov).value.trim() || 'ชิ้น',
           minQty: Math.max(0, +$('#pMin', ov).value || 0),
-          image: url || emo || '📦', imageType: url ? 'url' : 'emoji'
+          media: media, image: cover.image, imageType: cover.imageType
         };
+        /* ลบไฟล์ที่เอาออกจากคลังสื่อทิ้งจริง เพื่อไม่ให้กินพื้นที่ */
+        if (cloudOn()) removed.forEach(function (path) { Cloud.deleteMedia(path); });
         if (DB.can('product.price')) {
           data.cost = Math.max(0, +$('#pCost', ov).value || 0);
           data.price = Math.max(0, +$('#pPrice', ov).value || 0);
@@ -244,7 +345,7 @@
         } else {
           if (!DB.can('product.create')) { UI.toast('ไม่มีสิทธิ์เพิ่มสินค้า', 'err'); return false; }
           var np = Object.assign({
-            id: DB.uid('p'), cost: 0, price: 0, qty: 0, active: true, createdAt: DB.nowISO()
+            id: pid, cost: 0, price: 0, qty: 0, active: true, createdAt: DB.nowISO()
           }, data);
           np.qty = DB.can('stock.adjust') ? Math.max(0, +$('#pQty', ov).value || 0) : 0;
           DB.state.products.push(np);

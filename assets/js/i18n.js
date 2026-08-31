@@ -19,6 +19,11 @@
     th: {
       navHome: 'หน้าแรก', navShop: 'เลือกซื้อ', navAbout: 'เกี่ยวกับ', navContact: 'ติดต่อ',
 
+      previewBtn: 'ดูตัวอย่าง',
+      pvTitle: 'ตัวอย่างสินค้า',
+      pvStock: 'คงเหลือ',
+      pvNoMedia: 'ยังไม่มีรูปตัวอย่างสำหรับสินค้านี้',
+      pvVideo: 'วิดีโอ',
       heroReady: 'พร้อมส่ง', heroSoldOut: 'สินค้าหมดชั่วคราว', heroViewAll: 'ดูสินค้าทั้งหมด →',
       heroCode: 'รหัส',
 
@@ -73,6 +78,11 @@
     en: {
       navHome: 'Home', navShop: 'Shop', navAbout: 'About', navContact: 'Contact',
 
+      previewBtn: 'Preview',
+      pvTitle: 'Product preview',
+      pvStock: 'In stock',
+      pvNoMedia: 'No preview media for this item yet',
+      pvVideo: 'Video',
       heroReady: 'In stock', heroSoldOut: 'Temporarily out of stock', heroViewAll: 'Browse all products →',
       heroCode: 'SKU',
 
@@ -127,6 +137,11 @@
     zh: {
       navHome: '首页', navShop: '选购', navAbout: '关于我们', navContact: '联系我们',
 
+      previewBtn: '查看详情',
+      pvTitle: '商品预览',
+      pvStock: '库存',
+      pvNoMedia: '该商品暂无预览图片',
+      pvVideo: '视频',
       heroReady: '现货', heroSoldOut: '暂时售罄', heroViewAll: '查看全部商品 →',
       heroCode: '货号',
 
