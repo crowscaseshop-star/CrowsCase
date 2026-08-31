@@ -39,6 +39,7 @@ body{
   font-size:14.5px;
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
+  position:relative;
 }
 ::selection{background:rgba(212,175,55,.3)}
 ::-webkit-scrollbar{width:10px;height:10px}
@@ -50,12 +51,36 @@ a{color:var(--gold);text-decoration:none}
 button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 .gold-text{background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
 
+/* ---------- ภาพพื้นหลังแบรนด์ ----------
+   .site-bg  = แถบภาพด้านบนของหน้าเว็บลูกค้า (ไล่จางลงเป็นสีดำเมื่อเลื่อนลง)
+   .login-bg = ภาพเต็มจอด้านหลังกล่องเข้าสู่ระบบ                       */
+.site-bg,.login-bg{
+  position:absolute;top:0;left:0;right:0;z-index:-2;pointer-events:none;overflow:hidden;
+  background-image:url("../img/bg.jpg");
+  background-repeat:no-repeat;background-size:cover;background-position:82% 38%;
+}
+.site-bg{height:clamp(560px,96vh,900px)}
+.login-bg{position:fixed;inset:0;height:auto;background-position:center right}
+.site-bg::after,.login-bg::after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(100deg,#08080a 0%,rgba(8,8,10,.95) 26%,rgba(8,8,10,.74) 52%,rgba(8,8,10,.42) 78%,rgba(8,8,10,.5) 100%),
+    linear-gradient(to bottom,rgba(8,8,10,.28) 0%,rgba(8,8,10,.34) 42%,rgba(8,8,10,.86) 84%,#08080a 100%);
+}
+.login-bg::after{
+  background:
+    radial-gradient(70% 60% at 50% 45%,rgba(8,8,10,.86) 0%,rgba(8,8,10,.94) 60%,#08080a 100%),
+    linear-gradient(100deg,rgba(8,8,10,.7) 0%,rgba(8,8,10,.55) 60%,rgba(8,8,10,.4) 100%);
+}
+
 /* ---------- Login ---------- */
-.login-wrap{min-height:100vh;display:grid;place-items:center;padding:24px}
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;position:relative}
 .login-card{
-  width:100%;max-width:410px;background:linear-gradient(180deg,#17171c,#101014);
+  width:100%;max-width:410px;
+  background:linear-gradient(180deg,rgba(23,23,28,.82),rgba(15,15,19,.92));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   border:1px solid var(--line);border-radius:20px;padding:38px 34px;box-shadow:var(--shadow);
-  position:relative;overflow:hidden;
+  position:relative;overflow:hidden;z-index:1;
 }
 .login-card::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(212,175,55,.07),transparent 70%);pointer-events:none}
 .login-logo{width:104px;height:104px;border-radius:24px;background:#0a0a0d;border:1px solid var(--line);
@@ -312,7 +337,7 @@ tbody tr:hover{background:rgba(212,175,55,.045)}
 .switch input:checked + .slider::before{transform:translateX(19px);background:var(--gold)}
 
 /* ---------- Public shop page ---------- */
-.shop-nav{position:sticky;top:0;z-index:50;background:rgba(8,8,10,.92);backdrop-filter:blur(14px);
+.shop-nav{position:sticky;top:0;z-index:50;background:rgba(8,8,10,.6);backdrop-filter:blur(16px);
   border-bottom:1px solid var(--line);padding:11px 30px;display:flex;align-items:center;gap:16px}
 .shop-nav .brand-logo{width:40px;height:40px}
 .nav-links{display:flex;gap:4px;margin-left:auto}
@@ -351,7 +376,9 @@ tbody tr:hover{background:rgba(212,175,55,.045)}
 .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
 .hero-actions .btn{padding:13px 26px;font-size:14.5px;border-radius:12px}
 .feature-frame{position:relative;border-radius:26px;border:1px solid var(--line);
-  background:linear-gradient(160deg,#191920,#0a0a0d);min-height:380px;display:grid;place-items:center;
+  background:linear-gradient(160deg,rgba(25,25,32,.62),rgba(10,10,13,.82));
+  backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+  min-height:380px;display:grid;place-items:center;
   padding:30px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.55)}
 .feature-frame::before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;
   background:radial-gradient(circle,rgba(212,175,55,.16),transparent 68%);top:-70px;right:-70px}
@@ -394,7 +421,7 @@ tbody tr:hover{background:rgba(212,175,55,.045)}
 .info-box .lb{font-size:11px;letter-spacing:1.6px;color:var(--muted-2);text-transform:uppercase;margin-bottom:5px}
 .info-box .vl{font-size:13.5px;line-height:1.7}
 
-.site-foot{border-top:1px solid var(--line-soft);padding:34px 30px 40px;text-align:center;
+.site-foot{position:relative;border-top:1px solid var(--line-soft);padding:34px 30px 40px;text-align:center;background:transparent;
   color:var(--muted-2);font-size:12.5px;line-height:1.9}
 .site-foot .logo-mini{width:46px;height:46px;margin:0 auto 12px;opacity:.85}
 .float-cart{position:fixed;right:24px;bottom:24px;z-index:80;background:var(--grad-gold);color:#14110a;
@@ -432,6 +459,11 @@ tbody tr:hover{background:rgba(212,175,55,.045)}
   .nav-link{padding:7px 13px;font-size:13px}
   .section{padding:46px 0;scroll-margin-top:118px}
   .hero-split{padding:34px 0 20px}
+  .site-bg{height:clamp(300px,44vh,400px);background-position:74% 14%}
+  .site-bg::after{background:
+    linear-gradient(100deg,rgba(8,8,10,.88) 0%,rgba(8,8,10,.74) 55%,rgba(8,8,10,.62) 100%),
+    linear-gradient(to bottom,rgba(8,8,10,.34) 0%,rgba(8,8,10,.6) 42%,rgba(8,8,10,.95) 88%,#08080a 100%)}
+  .feature-frame{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 }
 @media print{
   .sidebar,.topbar,.no-print,.overlay,.toasts{display:none!important}

@@ -10,3 +10,6 @@ desktop.ini
 
 .vercel
 .env*
+
+# ไฟล์รูปต้นฉบับความละเอียดสูง (ใช้เวอร์ชันย่อใน assets/img แทน)
+/BG.png
