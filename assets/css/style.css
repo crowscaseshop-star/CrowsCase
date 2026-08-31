@@ -425,8 +425,12 @@ a.btn{text-decoration:none}
 /* หัวหน้าเพจ (หน้าเลือกซื้อ / เกี่ยวกับ) */
 .page-head{padding:58px 0 6px;text-align:center}
 .page-head h1{font-size:clamp(27px,4vw,42px);font-weight:800;letter-spacing:-.8px;line-height:1.2;margin:10px 0 12px;
+  max-width:20ch;margin-left:auto;margin-right:auto;text-wrap:balance;
   background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
-.page-head p{color:var(--muted);max-width:640px;margin:0 auto;line-height:1.85}
+.page-head p{color:#a9a39a;max-width:640px;margin:0 auto;line-height:1.9;font-size:15px}
+.page-head h1.len-m {font-size:clamp(24px,3vw,34px);letter-spacing:-.4px;line-height:1.3;max-width:26ch}
+.page-head h1.len-l {font-size:clamp(21px,2.3vw,29px);letter-spacing:0;line-height:1.45;max-width:34ch;font-weight:700}
+.page-head h1.len-xl{font-size:clamp(19px,1.9vw,24px);line-height:1.55;max-width:42ch;font-weight:700}
 .page-head .sec-line{margin-top:18px}
 #contact{scroll-margin-top:96px}
 .section{padding:66px 0;scroll-margin-top:80px;border-top:1px solid rgba(255,255,255,.04)}
@@ -442,8 +446,13 @@ a.btn{text-decoration:none}
 .hero-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 15px;border-radius:20px;
   background:rgba(212,175,55,.11);border:1px solid rgba(212,175,55,.32);color:var(--gold-lt);
   font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:20px}
-.hero-split h1{font-size:clamp(29px,4.4vw,50px);font-weight:800;letter-spacing:-1.2px;line-height:1.16;margin-bottom:18px}
-.hero-split p.lead{color:var(--muted);font-size:15.5px;line-height:1.9;margin-bottom:26px}
+.hero-split h1{font-size:clamp(29px,4.4vw,50px);font-weight:800;letter-spacing:-1.2px;line-height:1.16;margin-bottom:18px;
+  max-width:17ch;text-wrap:balance}
+/* หัวข้อยิ่งยาว ตัวอักษรยิ่งเล็กลงและเว้นบรรทัดโปร่งขึ้น เพื่อให้อ่านสบายและไม่กลืนส่วนอื่น */
+.hero-split h1.len-m {font-size:clamp(25px,3.2vw,37px);letter-spacing:-.6px;line-height:1.26;max-width:28ch}
+.hero-split h1.len-l {font-size:clamp(21px,2.4vw,30px);letter-spacing:-.2px;line-height:1.42;max-width:32ch;font-weight:700}
+.hero-split h1.len-xl{font-size:clamp(19px,1.95vw,25px);letter-spacing:0;line-height:1.55;max-width:40ch;font-weight:700}
+.hero-split p.lead{color:#a9a39a;font-size:16px;line-height:1.95;margin-bottom:26px;max-width:54ch}
 .hero-price{display:flex;align-items:baseline;gap:12px;margin-bottom:26px;flex-wrap:wrap}
 .hero-price .now{font-size:34px;font-weight:800;background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero-price .nm{font-size:13.5px;color:var(--muted)}

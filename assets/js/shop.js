@@ -76,6 +76,7 @@
     $$('[data-t]').forEach(function (e) { e.textContent = T(e.dataset.t); });
     $$('[data-tph]').forEach(function (e) { e.placeholder = T(e.dataset.tph); });
     if ($('#fabLabel')) $('#fabLabel').textContent = T('cartFab');
+    $$('.page-head h1').forEach(fitHeading);
     if ($('#trustBox')) {
       $('#trustBox').innerHTML = [1, 2, 3].map(function (i) {
         return '<div class="trust-item"><div class="ic">' + ['◆', '✦', '☗'][i - 1] + '</div>' +
@@ -91,12 +92,23 @@
     }
   }
 
+  /* เลือกขนาดหัวข้อตามความยาวข้อความ — ข้อความยาวจะใช้ตัวอักษรเล็กลงโดยอัตโนมัติ */
+  function fitHeading(el) {
+    if (!el) return;
+    var n = (el.textContent || '').trim().length;
+    el.classList.remove('len-m', 'len-l', 'len-xl');
+    if (n > 140) el.classList.add('len-xl');
+    else if (n > 90) el.classList.add('len-l');
+    else if (n > 45) el.classList.add('len-m');
+  }
+
   /* ================= หน้าแรก ================= */
   function paintHome() {
     var p = DB.featured();
     $('#heroBadge').textContent = I18N.s('heroBadge') || '';
     $('#heroTitle').textContent = I18N.s('heroTitle') || '';
     $('#heroText').textContent = I18N.s('heroText') || '';
+    fitHeading($('#heroTitle'));
     $('#heroBuy').textContent = I18N.s('heroCta') || T('btnBuy');
 
     if (!p) {
@@ -189,6 +201,7 @@
   /* ================= เกี่ยวกับ + ติดต่อ ================= */
   function paintAbout() {
     $('#aboutTitle').textContent = I18N.s('aboutTitle') || '';
+    fitHeading($('#aboutTitle'));
     $('#aboutEst').textContent = S.founded ? T('aboutEst', { year: S.founded }) : '';
     $('#aboutBody').innerHTML = String(I18N.s('aboutText') || '').split(/\n\s*\n/).map(function (t) {
       return '<p>' + esc(t.trim()).replace(/\n/g, '<br>') + '</p>';
