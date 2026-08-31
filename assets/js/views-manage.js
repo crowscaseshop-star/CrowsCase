@@ -316,6 +316,12 @@
         '<div style="font-size:12px;color:var(--muted-2);word-break:break-all">' + esc(link) + '</div></div>' +
         '<button class="btn" id="oCopy">📋 คัดลอกลิงก์</button>' +
         '<a class="btn btn-gold" href="order.html" target="_blank">เปิดหน้าร้านออนไลน์ →</a>' +
+      '</div>' +
+      '<div class="flex" style="flex-wrap:wrap;gap:8px;margin-top:12px;border-top:1px solid var(--line-soft);padding-top:12px">' +
+        '<span style="font-size:12px;color:var(--muted-2)">หน้าย่อย:</span>' +
+        '<a class="btn btn-sm" href="order.html" target="_blank">🏠 หน้าแรก</a>' +
+        '<a class="btn btn-sm" href="shop.html" target="_blank">🛍 เลือกซื้อ</a>' +
+        '<a class="btn btn-sm" href="about.html" target="_blank">📖 เกี่ยวกับ & ติดต่อ</a>' +
       '</div></div>' +
 
       '<div class="chip-row mb16" id="oChips">' +

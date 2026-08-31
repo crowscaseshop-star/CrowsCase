@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Crow's Case — Premium Card Protection</title>
-<meta name="description" content="Crow's Case — เคสและอุปกรณ์ปกป้องการ์ดสะสมระดับพรีเมียม สั่งซื้อออนไลน์ ทางร้านติดต่อกลับภายใน 24 ชั่วโมง">
+<title>เกี่ยวกับเรา & ติดต่อ — Crow's Case</title>
+<meta name="description" content="เรื่องราวก่อนจะมาเป็น Crow's Case และช่องทางติดต่อร้าน — LINE, Facebook, โทรศัพท์">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
 </head>
-<body data-page="home">
+<body data-page="about">
 
-<div class="site-bg" aria-hidden="true"></div>
+<div class="site-bg sub" aria-hidden="true"></div>
 
 <nav class="shop-nav">
   <span class="brand-logo" data-logo></span>
@@ -31,21 +31,34 @@
 </nav>
 
 <div class="shop-wrap">
-  <section class="section" style="border-top:none;padding-top:0">
-    <div class="hero-split">
-      <div>
-        <div class="hero-badge" id="heroBadge"></div>
-        <h1 class="gold-text" id="heroTitle"></h1>
-        <p class="lead" id="heroText"></p>
-        <div class="hero-price" id="heroPrice"></div>
-        <div class="hero-actions">
-          <button class="btn btn-gold" id="heroBuy"></button>
-          <a class="btn btn-ghost" href="shop.html" data-t="heroViewAll">ดูสินค้าทั้งหมด →</a>
-        </div>
+  <!-- ===== เกี่ยวกับ ===== -->
+  <header class="page-head" id="about">
+    <div class="sec-kicker" data-t="aboutKicker">About Us</div>
+    <h1 id="aboutTitle"></h1>
+    <div class="sec-line"></div>
+  </header>
+
+  <section class="section" style="border-top:none;padding-top:8px">
+    <div class="about-grid">
+      <div class="about-logo"><span data-logo="about-logo-img" style="display:block;width:100%"></span></div>
+      <div class="about-text">
+        <div class="about-est" id="aboutEst"></div>
+        <div id="aboutBody"></div>
       </div>
-      <div class="feature-frame" id="heroImage"></div>
     </div>
-    <div class="trust" id="trustBox"></div>
+    <div class="grid g-3" id="aboutPoints"></div>
+  </section>
+
+  <!-- ===== ติดต่อ ===== -->
+  <section class="section" id="contact">
+    <div class="sec-head">
+      <div class="sec-kicker" data-t="contactKicker">Contact</div>
+      <h2 data-t="contactTitle">ติดต่อเรา</h2>
+      <p data-t="contactDesc"></p>
+      <div class="sec-line"></div>
+    </div>
+    <div class="contact-grid" id="contactCards"></div>
+    <div class="info-row" id="contactInfo"></div>
   </section>
 </div>
 
